@@ -72,7 +72,7 @@ Top-level JSON keys:
 Source function:
 - `extract_all(resume_text, job_text)` in extraction service.
 
-## 9) Minimal run instructions for team
+## 7) Minimal run instructions for team
 
 Teammates only need to do this:
 
@@ -84,4 +84,4 @@ Teammates only need to do this:
 python app/demo_task2.py
 ```
 
-4. Expected result: console prints structured JSON with `job_requirements` and `candidate_profile`.
+3. Expected result: console prints structured JSON with `job_requirements` and `candidate_profile`.
