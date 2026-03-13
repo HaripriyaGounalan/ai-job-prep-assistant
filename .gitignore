@@ -1,3 +1,7 @@
 # Local env files
 .env
 app/.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
