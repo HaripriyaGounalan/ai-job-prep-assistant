@@ -52,7 +52,7 @@ class BedrockConfig:
     """Amazon Bedrock LLM configuration."""
     model_id: str = os.getenv(
         "BEDROCK_MODEL_ID",
-        "us.anthropic.claude-opus-4-5-20251101-v1:0",
+        "us.anthropic.claude-haiku-4-5-20251001-v1:0",
     )
     max_tokens: int = int(os.getenv("BEDROCK_MAX_TOKENS", "4096"))
     temperature: float = float(os.getenv("BEDROCK_TEMPERATURE", "0.0"))
