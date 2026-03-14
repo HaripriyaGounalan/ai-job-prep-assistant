@@ -1,3 +1,16 @@
-boto3
-Pillow
-python-dotenv
+boto3>=1.34.0
+botocore>=1.34.0
+python-dotenv>=1.0.0
+Pillow>=10.0.0
+pdf2image>=1.16.3
+pydantic>=2.5.0
+
+# Task 2: LangGraph/LangChain extraction pipeline
+langgraph>=0.2.0
+langchain>=0.3.0
+langchain-core>=0.3.0
+
+# Testing
+pytest>=7.4.0
+pytest-mock>=3.12.0
+moto[s3,textract]>=5.0.0
