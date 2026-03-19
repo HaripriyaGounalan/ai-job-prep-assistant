@@ -1,0 +1,93 @@
+J ohn Doe 
+S O F T WARE ENGINEER 
+666 999 0000    |    xxx@my.centennialcollege.ca   |     Toronto, ON 
+P ROFILE SUMMARY 
+A highly motivated Software Developer with a passion for solving complex problems and delivering impactful solutions. Excels at 
+adapting to challenges by leveraging strong analytical thinking, time management, and collaboration skills to create value and 
+achieve meaningful outcomes. A dedicated team player and quick learner with strong problem-solving abilities, system design 
+knowledge, and experience in software development and testing. Possesses strengths in data analytics, data visualization, 
+modeling, and reporting, with proficiency in SQL, Python, Machine Learning, and Java. 
+T ECHNICAL SKILLS 
+• Backend Development: Java, Python, Node.js, C#, Flask 
+• Frontend Development: React.js, Redux, Angular, HTML, CSS, Bootstrap, JavaScript, Tkinter 
+• Database Management: MySQL, PostgreSQL, MongoDB, SQL 
+• Machine Learning: Pandas, NumPy, Scikit-learn, TensorFlow, Keras 
+• System Development: UML Diagrams, Object-Oriented Design, Agile Development 
+• Tools: Figma, Lucidchart, Visio, Visual Paradigm, Jira, Git, Visual Studio Code, IntelliJ IDEA, SharePoint, Spyder 
+WORK EXPERIENCE 
+Healthcare Systems R&A Inc. (May. 2025 - Present) 
+Role: Software Engineer Research Assistant (AI) 
+• Contributed to the development of machine learning models for chronic back pain and mineral exploration using 
+TensorFlow, Keras, and Neural Networks. 
+• Assisted in automating the extraction of key points from images, converting them to JSON and then CSV for preprocessing. 
+• Worked with the team to optimize model architecture, improving accuracy and performance. 
+Kaanchy - E-Commerce Web Application (Mar.2023 - Oct.2024) 
+Role: UI developer, Inventory Manager, Customer Support 
+• Designed and developed an e-commerce web application for selling ethnic clothing. 
+• Implemented inventory management features to facilitate real-time stock updates and efficient order tracking. 
+• Managed customer support operations, delivering prompt and personalized responses to address customer needs, 
+including effectively handling challenging situations and ensuring high satisfaction. 
+E DUCATION 
+Software Engineering Technology (Fast Track) - Artificial Intelligence (Co-op) - GPA: 4.45 / 4.5 (Sept. 2024-Present) 
+Centennial College, Toronto, ON                                                                                                        
+Expected Graduation: Dec. 2026
+Software Engineering Technology (Fast Track) - Advanced Diploma - GPA: 4.38 / 4.5 (Jan. 2019 - Aug. 2019) 
+Centennial College, Toronto, ON 
+Bachelor of Technology - Information Technology - GPA: 9.28 / 10 (Aug. 2012 - June. 2016) 
+Sri Manakula Vinayagar Engineering College (SMVEC), Puducherry, India 
+A CADEMIC PROJECTS 
+AI Project - Toronto Accident Prediction (Mar. 2025 - Apr. 2025)     
+Role: UI Designer, UI Developer, AI Developer  
+• Developed an SVM model and implemented ensemble techniques including hard and soft voting across five machine 
+learning models. 
+• Handled preprocessing, feature engineering, and class imbalance. 
+• Designed and developed a user interface for model analytics and comparative visualization. 
+• Utilized tools and libraries such as Scikit-learn, NumPy, Pandas, Seaborn, and Matplotlib. 
+AI Project - YouTube Spam Classifier (Dec. 2024 - Dec. 2024)     
+Role: Project Coordinator, Developer  
+• Led the development of a machine learning spam classifier for YouTube comments, improving detection accuracy by 
+15%. 
+• Used scikit-learn, NumPy, Seaborn, and Matplotlib for data preprocessing, visualization, and model building. 
+• Wrote and optimized Python code to handle large YouTube API datasets and conducted cross-validation for accuracy and 
+robustness. 
+BeatSnap - Social Media Web Application (Nov. 2024 - Dec. 2024)  
+Role: UI Designer, UI Developer  
+• Designed app wireframes in Figma, optimizing user experience and navigation. 
+• Developed frontend with React, Redux, and styled with Bootstrap/CSS. 
+• Overcame a challenging issue with iframe functionality, implementing a solution to control video playback, ensuring only 
+one video played at a time.  
+• Integrated YouTube, Spotify and application APIs with the frontend to enable dynamic content and enhance user 
+interactions. 
+MindTrack - Software System Design (Sep. 2024 - Dec. 2024) 
+Role: Project Coordinator, System Designer, System Analyst 
+• Led design and development of MindTrack, a mobile app to improve time management and productivity. 
+• Collaborated on defining system requirements, software architecture, and Agile development. 
+• Used Lucidchart, Visio, Visual Paradigm, and Jira for system design, documentation, and project management. 
+HONORS & AWARDS 
+Academic Excellence Merit Award in Information Technology (Jan.2016) 
+For Securing 1st Rank at the College | SMVEC | Puducherry, India 
+State-Level 2nd Rank Holder in Information Technology (June. 2016) 
+Pondicherry University | Puducherry, India 
+C OURSE WORK 
+• Data Structures and Algorithms 
+• Machine Learning & AI 
+• Advanced Database Concepts 
+• Mobile App Development 
+• Web Development 
+• UI/UX Design 
+• Object Oriented Programming 
+• Linear Algebra and Statistics 
+• Leadership 
+P ROFESSIONAL DEVELOPMENT 
+Unsupervised Learning, Recommenders, Reinforcement Learning                                                                               
+Coursera (Remote) | Certificate 
+AI Product Foundations: Planning Strategies for Data Scientists                                                                                   
+LinkedIn (Remote) | Certificate 
+Supervised Machine Learning: Regression and Classification 
+Coursera (Remote) | Certificate 
+Advanced Learning Algorithms 
+Coursera (Remote) | Certificate 
+May. 2025 
+Feb. 2025 
+Jan. 2025 
+Jan. 2025 

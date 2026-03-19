@@ -11,26 +11,32 @@ score, estimates salary range, and generates interview preparation questions.
 
 ### Completed
 
-| Task | Name | Description | Status |
-|------|------|-------------|--------|
-| 1 | File Storage + OCR | Upload files to S3, run Textract OCR, clean text | Done (40 tests) |
-| 2 | LangGraph Extraction | Extract structured job requirements and candidate profile via Bedrock | Done (51 tests) |
+| Task | Name                                 | Description                                                                                                                | Status          |
+| ---- | ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| 1    | File Storage + OCR                   | Upload files to S3, run Textract OCR, clean text                                                                           | Done (40 tests) |
+| 2    | LangGraph Extraction                 | Extract structured job requirements and candidate profile via Bedrock                                                      | Done (51 tests) |
+| 3    | Comparison, Scoring, Recommendations | 5-layer pipeline: skill normalization, ontology matching, semantic similarity, deterministic scoring, Bedrock LLM insights | Done (77 tests) |
 
 ### Still To Do
 
-| Task | Name | Description | Status |
-|------|------|-------------|--------|
-| 3 | Comparison, Scoring, Recommendations | Compare JD vs resume skills, compute match score, identify gaps, generate interview questions and upskilling suggestions via LLM | Not started |
-| 4 | Backend Integration (FastAPI) | Wire Tasks 1-3 behind REST endpoints: `POST /upload`, `POST /analyze`, `GET /result/{id}`, `GET /health` | Not started |
-| 5 | React + shadcn/ui Frontend | Upload UI, processing status, results dashboard with score card, skills gap table, recommendation cards, interview question accordion | Not started |
+| Task | Name                          | Description                                                                                                                           | Status      |
+| ---- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 4    | Backend Integration (FastAPI) | Wire Tasks 1–3 behind REST endpoints: `POST /upload`, `POST /analyze`, `GET /result/{id}`, `GET /health`                              | Not started |
+| 5    | React + shadcn/ui Frontend    | Upload UI, processing status, results dashboard with score card, skills gap table, recommendation cards, interview question accordion | Not started |
 
-### What Task 3 will receive from Task 2
+### How Tasks 1 → 2 → 3 connect
 
-Task 2 outputs an `ExtractionState` with typed `JobRequirements` and
-`CandidateProfile` objects. Task 3 will consume these to:
+**Task 1** uploads and OCR-processes both files, outputting two cleaned text
+strings (`resume_text`, `job_description_text`).
 
-- Run **deterministic code** for skill overlap, missing skills, and match percentage
-- Call the **LLM** for strengths/gaps explanation, study recommendations, interview prep questions, and salary summary
+**Task 2** takes those strings, runs them in parallel through a LangGraph
+`StateGraph` backed by AWS Bedrock (Claude), and outputs a typed `ExtractionState`
+with `JobRequirements` and `CandidateProfile` objects.
+
+**Task 3** consumes the `ExtractionState` and runs it through a 5-layer
+comparison engine (normalize → ontology → semantic similarity → deterministic
+scoring → LLM insights), returning a `ComparisonResult` with scores, skill gap
+lists, upskilling recommendations, interview questions, and salary context.
 
 ### What Task 4 will wire together
 
@@ -43,14 +49,14 @@ Task 3 (comparison + scoring), and return the final JSON result.
 ## Architecture
 
 ```
-Task 1                     Task 2                          Task 3 (TODO)
+Task 1                     Task 2                          Task 3
 ┌──────────────┐           ┌──────────────────────┐        ┌──────────────────┐
-│ Validate     │           │  LangGraph Workflow   │        │ Deterministic    │
-│ Upload to S3 │── text ──▶│                      │── ──▶│  skill overlap   │
-│ Textract OCR │           │ ┌────────┐ ┌───────┐ │        │  match score     │
-│ Clean text   │           │ │ JD     │ │Resume │ │        │  missing skills  │
+│ Validate     │           │  LangGraph Workflow   │        │ L1 Normalize     │
+│ Upload to S3 │── text ──▶│                      │──────▶│ L2 Ontology      │
+│ Textract OCR │           │ ┌────────┐ ┌───────┐ │        │ L3 Semantic Sim  │
+│ Clean text   │           │ │ JD     │ │Resume │ │        │ L4 Score         │
 └──────────────┘           │ │Extract │ │Extract│ │        ├──────────────────┤
-                           │ └───┬────┘ └──┬────┘ │        │ LLM-powered      │
+                           │ └───┬────┘ └──┬────┘ │        │ L5 LLM-powered   │
                            │     └────┬────┘      │        │  gap explanation │
                            │     ┌────▼───┐       │        │  recommendations │
                            │     │Finalize│       │        │  interview Qs    │
@@ -89,7 +95,7 @@ job-prep-assistant/
 ├── extraction_pipeline/             # ── TASK 2: LangGraph/LangChain Extraction ──
 │   ├── __init__.py
 │   ├── models.py                    # Pydantic models: JobRequirements, CandidateProfile, ExtractionState
-│   ├── llm_client.py               # Amazon Bedrock wrapper with retries + robust JSON parsing
+│   ├── llm_client.py                # Amazon Bedrock wrapper with retries + robust JSON parsing
 │   ├── graph.py                     # LangGraph StateGraph definition + run_extraction() entry point
 │   ├── nodes/
 │   │   ├── __init__.py
@@ -98,6 +104,16 @@ job-prep-assistant/
 │   └── prompts/
 │       ├── __init__.py
 │       └── extraction_prompts.py    # System + user prompt templates with embedded JSON schema
+│
+├── comparison_pipeline/             # ── TASK 3: Comparison, Scoring & Recommendations ──
+│   ├── __init__.py                  # Exports run_comparison and ComparisonResult
+│   ├── models.py                    # Pydantic models: SkillMatch, LLMInsights, ComparisonResult
+│   ├── normalizer.py                # Layer 1: SKILL_ALIASES (~50 entries), normalize_skill()
+│   ├── ontology.py                  # Layer 2: SKILL_ONTOLOGY (~25 entries), exact/alias/related matching
+│   ├── similarity.py                # Layer 3: all-MiniLM-L6-v2 cosine similarity with thresholds
+│   ├── scorer.py                    # Layer 4: skill score, experience score, education match, overall score
+│   ├── llm_layer.py                 # Layer 5: single Bedrock call (temp 0.3) → validated LLMInsights
+│   └── run_comparison.py            # Orchestrator: runs all 5 layers, returns ComparisonResult
 │
 ├── tests/
 │   ├── __init__.py
@@ -115,13 +131,23 @@ job-prep-assistant/
 │   ├── test_extraction_prompts.py   #  8 tests — prompt structure, schema embedding, text injection
 │   ├── test_llm_client.py           # 14 tests — JSON parsing (fences, preamble, nesting), retries
 │   ├── test_extraction_nodes.py     #  7 tests — node success, empty input, LLM errors, validation
-│   └── test_extraction_graph.py     # 11 tests — full graph invocation, partial/failed states, serialization
+│   ├── test_extraction_graph.py     # 11 tests — full graph invocation, partial/failed states, serialization
+│   │
+│   │  # Task 3 tests (77 total)
+│   ├── test_normalizer.py           # 17 tests — alias resolution, dedup, edge cases
+│   ├── test_ontology.py             # 12 tests — exact, alias, related, none match types
+│   ├── test_similarity.py           #  9 tests — cosine similarity, short-string guard, thresholds
+│   ├── test_scorer.py               # 22 tests — skill score, experience fallback, education match, overall
+│   ├── test_llm_layer.py            #  7 tests — message structure, 5-question enforcement, graceful failure
+│   └── test_comparison_pipeline.py  # 10 tests — end-to-end integration, edge cases, real-world fixture
 │
 ├── samples/
-│   ├── resume.txt                   # Sample resume text (for Task 2 standalone testing)
-│   └── jd.txt                       # Sample job description text
+│   ├── resume.pdf                   # Sample resume (John Doe)
+│   ├── Jd.pdf                       # Sample job description (TD ML Engineer)
+│   ├── resume.txt                   # Pre-extracted resume text (for --step 3 standalone)
+│   └── jd.txt                       # Pre-extracted JD text (for --step 3 standalone)
 │
-├── demo_run.py                      # Run Task 1 + Task 2 against real AWS services
+├── demo_run.py                      # Run Tasks 1 + 2 + 3 against real AWS; supports --step flag
 ├── main.py                          # CLI entry point for Task 1
 ├── requirements.txt
 ├── pytest.ini
@@ -135,33 +161,35 @@ job-prep-assistant/
 
 ### Runtime
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `boto3` | >= 1.34.0 | AWS SDK — S3, Textract, Bedrock Runtime |
-| `botocore` | >= 1.34.0 | Low-level AWS client (comes with boto3) |
-| `python-dotenv` | >= 1.0.0 | Load `.env` file into environment |
-| `pydantic` | >= 2.5.0 | Strict JSON schema validation for LLM output |
-| `langgraph` | >= 0.2.0 | Stateful graph workflows with parallel execution |
-| `langchain` | >= 0.3.0 | LLM prompt/model tooling |
-| `langchain-core` | >= 0.3.0 | Core abstractions for LangChain |
-| `Pillow` | >= 10.0.0 | Image handling utilities |
-| `pdf2image` | >= 1.16.3 | PDF to image conversion (for Textract) |
+| Package                 | Version   | Purpose                                                   |
+| ----------------------- | --------- | --------------------------------------------------------- |
+| `boto3`                 | >= 1.34.0 | AWS SDK — S3, Textract, Bedrock Runtime                   |
+| `botocore`              | >= 1.34.0 | Low-level AWS client (comes with boto3)                   |
+| `python-dotenv`         | >= 1.0.0  | Load `.env` file into environment                         |
+| `pydantic`              | >= 2.5.0  | Strict JSON schema validation for LLM output              |
+| `langgraph`             | >= 0.2.0  | Stateful graph workflows with parallel execution          |
+| `langchain`             | >= 0.3.0  | LLM prompt/model tooling                                  |
+| `langchain-core`        | >= 0.3.0  | Core abstractions for LangChain                           |
+| `sentence-transformers` | >= 2.2.0  | Semantic skill similarity via all-MiniLM-L6-v2 embeddings |
+| `Pillow`                | >= 10.0.0 | Image handling utilities                                  |
+| `pdf2image`             | >= 1.16.3 | PDF to image conversion (for Textract)                    |
 
 ### Testing only
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `pytest` | >= 7.4.0 | Test runner |
-| `pytest-mock` | >= 3.12.0 | Mock utilities |
-| `moto[s3,textract]` | >= 5.0.0 | AWS service mocking (no credentials needed) |
+| Package             | Version   | Purpose                                     |
+| ------------------- | --------- | ------------------------------------------- |
+| `pytest`            | >= 7.4.0  | Test runner                                 |
+| `pytest-mock`       | >= 3.12.0 | Mock utilities                              |
+| `moto[s3,textract]` | >= 5.0.0  | AWS service mocking (no credentials needed) |
 
 ### AWS services used
 
-| Service | Task | Purpose |
-|---------|------|---------|
-| Amazon S3 | Task 1 | File storage under `uploads/` and `processed/` prefixes |
-| Amazon Textract | Task 1 | OCR on PDFs and images (sync + async modes) |
-| Amazon Bedrock | Task 2 | LLM invocation (Claude 3 Sonnet) for structured extraction |
+| Service         | Task   | Purpose                                                                               |
+| --------------- | ------ | ------------------------------------------------------------------------------------- |
+| Amazon S3       | Task 1 | File storage under `uploads/` and `processed/` prefixes                               |
+| Amazon Textract | Task 1 | OCR on PDFs and images (sync + async modes)                                           |
+| Amazon Bedrock  | Task 2 | LLM invocation (Claude) for structured extraction — 2 calls (JD + resume in parallel) |
+| Amazon Bedrock  | Task 3 | LLM invocation (Claude) for career insights — 1 call per comparison                   |
 
 ---
 
@@ -187,6 +215,7 @@ AWS_ACCESS_KEY_ID=AKIA...your-key...
 AWS_SECRET_ACCESS_KEY=wJalr...your-secret...
 AWS_REGION=us-east-1
 S3_BUCKET_NAME=my-unique-bucket-name-12345
+BEDROCK_MODEL_ID=us.anthropic.claude-haiku-4-5-20251001-v1:0
 ```
 
 All other variables have sensible defaults. See `.env.example` for the full list.
@@ -212,10 +241,10 @@ bedrock:InvokeModel
 ### Run tests (no AWS credentials required)
 
 Tests use `moto` for S3/Textract mocking and `unittest.mock` for Bedrock.
-All 91 tests run entirely locally.
+All 168 tests run entirely locally.
 
 ```bash
-# All 91 tests
+# All 168 tests
 pytest
 
 # Verbose output
@@ -231,118 +260,200 @@ pytest tests/test_extraction_models.py tests/test_extraction_prompts.py \
        tests/test_llm_client.py tests/test_extraction_nodes.py \
        tests/test_extraction_graph.py
 
-# Specific test area
-pytest -k "s3"                # S3 service tests
-pytest -k "llm_client"        # Bedrock client + JSON parsing
-pytest -k "graph"             # LangGraph workflow integration
+# Task 3 only (77 tests)
+pytest tests/test_normalizer.py tests/test_ontology.py tests/test_similarity.py \
+       tests/test_scorer.py tests/test_llm_layer.py tests/test_comparison_pipeline.py
 ```
 
 ### Run against real AWS services
 
-The `demo_run.py` script runs the actual pipelines against live AWS.
+#### Quick Command Reference
 
-#### Full pipeline: Task 1 (OCR) → Task 2 (extraction)
+| Goal                    | Command                                                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Install deps            | `pip install -r requirements.txt`                                                                                                                                   |
+| Quick import check      | `python -c "from comparison_pipeline import run_comparison; print('OK')"`                                                                                           |
+| Run all tests           | `pytest -v`                                                                                                                                                         |
+| Run Task 3 tests only   | `pytest tests/test_normalizer.py tests/test_ontology.py tests/test_similarity.py tests/test_scorer.py tests/test_llm_layer.py tests/test_comparison_pipeline.py -v` |
+| Task 3 with text files  | `python demo_run.py --resume-text samples/resume.txt --jd-text samples/jd.txt --step 3` _(Note: requires pre-extracted .txt files in samples/)_                     |
+| Full pipeline with PDFs | `python demo_run.py --resume samples/resume.pdf --job-desc samples/Jd.pdf`                                                                                          |
+| Full pipeline + save    | `python demo_run.py --resume samples/resume.pdf --job-desc samples/Jd.pdf -o task3_result.json`                                                                     |
 
-Requires: S3 + Textract + Bedrock access, and real PDF/image files.
-
-```bash
-python demo_run.py --resume ./my_resume.pdf --job-desc ./job_posting.png
-```
-
-#### Task 1 only (OCR + text cleaning)
-
-Requires: S3 + Textract access.
-
-```bash
-python demo_run.py --resume ./my_resume.pdf --job-desc ./job_posting.png --step 1
-```
-
-#### Task 2 only (extraction from pre-existing text)
-
-Requires: Bedrock access only. No S3 or Textract needed. Use this to
-test the extraction pipeline without needing real PDFs.
-
-Sample text files are included in `samples/`.
+#### Full pipeline: Tasks 1 + 2 + 3
 
 ```bash
-python demo_run.py --resume-text ./samples/resume.txt --jd-text ./samples/jd.txt --step 2
+python demo_run.py --resume samples/resume.pdf --job-desc samples/Jd.pdf
 ```
 
 #### Save output to JSON
 
 ```bash
-python demo_run.py --resume ./my_resume.pdf --job-desc ./job_posting.png --output result.json
+python demo_run.py --resume samples/resume.pdf --job-desc samples/Jd.pdf -o task3_result.json
 ```
 
-#### Verbose mode (debug logging from boto3, LangGraph, etc.)
+#### Skip OCR — run Task 2 + Task 3 from pre-extracted text
+
+Requires only Bedrock access (no S3 or Textract). `samples/resume.txt` and `samples/jd.txt` must exist.
 
 ```bash
-python demo_run.py --resume ./my_resume.pdf --job-desc ./job_posting.png -v
+python demo_run.py --resume-text samples/resume.txt --jd-text samples/jd.txt --step 3
 ```
 
-### Task 1 CLI (standalone)
-
-The `main.py` script provides a simpler CLI for Task 1 only.
+#### Task 2 only (extraction from text)
 
 ```bash
-# Process a pair, print summary
-python main.py --resume resume.pdf --job-desc jd.png
+python demo_run.py --resume-text samples/resume.txt --jd-text samples/jd.txt --step 2
+```
 
-# Single file
-python main.py --resume resume.pdf
+#### Task 1 only (OCR only)
 
-# JSON output
-python main.py --resume resume.pdf --job-desc jd.png --json
+```bash
+python demo_run.py --resume samples/resume.pdf --job-desc samples/Jd.pdf --step 1
+```
+
+#### Verbose mode
+
+```bash
+python demo_run.py --resume samples/resume.pdf --job-desc samples/Jd.pdf -v
+```
+
+### Verify imports
+
+```bash
+python -c "from comparison_pipeline import run_comparison; print('OK')"
+python -c "from extraction_pipeline import run_extraction; print('OK')"
+python -c "from ocr_pipeline.pipeline import OCRPipeline; print('OK')"
+```
+
+All three should print `OK`.
+
+---
+
+## Task 3 Output Contract
+
+Task 3 returns a `ComparisonResult` with this JSON structure. This is the input
+contract for Task 4.
+
+```json
+{
+ "overall_score": 62.0,
+ "skill_score": 52.5,
+ "experience_score": 100.0,
+ "education_matched": false,
+
+ "required_skill_matches": [
+  {
+   "skill": "python",
+   "match_type": "exact",
+   "score": 1.0,
+   "matched_to": "python"
+  },
+  {
+   "skill": "deep learning",
+   "match_type": "related",
+   "score": 0.75,
+   "matched_to": "machine learning"
+  },
+  { "skill": "c", "match_type": "none", "score": 0.0, "matched_to": null }
+ ],
+
+ "preferred_skill_matches": [
+  {
+   "skill": "tensorflow",
+   "match_type": "exact",
+   "score": 1.0,
+   "matched_to": "tensorflow"
+  },
+  {
+   "skill": "pytorch",
+   "match_type": "related",
+   "score": 0.75,
+   "matched_to": "tensorflow"
+  },
+  {
+   "skill": "langgraph",
+   "match_type": "none",
+   "score": 0.0,
+   "matched_to": null
+  }
+ ],
+
+ "missing_required_skills": ["c", "c++"],
+ "missing_preferred_skills": ["langgraph", "jax", "gpu computing", "research"],
+
+ "strengths_summary": "(LLM-generated paragraph)",
+ "gaps_summary": "(LLM-generated paragraph)",
+
+ "upskilling_recommendations": [
+  {
+   "skill": "C/C++",
+   "reason": "...",
+   "resource": "Coursera: C++ for C Programmers"
+  }
+ ],
+
+ "interview_questions": [
+  {
+   "question": "Walk us through a machine learning project...",
+   "category": "technical"
+  },
+  { "question": "Tell us about a time when...", "category": "behavioral" }
+ ],
+
+ "salary_insight": "(LLM-generated sentence)",
+ "errors": [
+  "Experience estimated from resume entries (2 roles -> ~3 years estimate)"
+ ]
+}
 ```
 
 ---
 
 ## Task 2 Output Contract
 
-Task 2 returns an `ExtractionState` with this JSON structure. This is
-the input contract for Task 3.
+Task 2 returns an `ExtractionState` with this JSON structure. This is the input
+contract for Task 3.
 
 ```json
 {
-  "status": "completed",
-  "job_requirements": {
-    "job_title": "Software Engineer - Cloud Infrastructure",
-    "company_name": "Acme Corp",
-    "location": "San Francisco, CA (Hybrid)",
-    "required_skills": ["Python", "Go", "AWS", "Kubernetes", "CI/CD"],
-    "preferred_skills": ["Terraform", "SRE", "Datadog", "gRPC"],
-    "years_experience_required": 5,
-    "tools_and_technologies": ["AWS EC2", "AWS S3", "Kubernetes", "Terraform"],
-    "education_requirements": ["BS in Computer Science or equivalent"],
-    "key_responsibilities": ["Design cloud-native microservices", "..."],
-    "employment_type": "Full-time",
-    "salary_range": "$180,000 - $240,000 + equity"
-  },
-  "candidate_profile": {
-    "candidate_name": "Jane Doe",
-    "contact_info": "jane.doe@email.com | ...",
-    "resume_skills": ["Python", "Go", "AWS", "Kubernetes", "Docker", "..."],
-    "resume_experience": [
-      {
-        "title": "Senior Software Engineer",
-        "company": "TechCorp Inc.",
-        "duration": "Mar 2021 - Present",
-        "highlights": ["Led microservices migration", "..."]
-      }
-    ],
-    "total_years_experience": 7,
-    "resume_experience_summary": "Senior engineer with 7 years...",
-    "resume_projects": [
-      {
-        "name": "Cloud Cost Optimizer",
-        "description": "Automated AWS cost analysis tool",
-        "technologies": ["Python", "Boto3", "Lambda"]
-      }
-    ],
-    "education": ["BS Computer Science, Stanford University, 2016"],
-    "certifications": ["AWS Solutions Architect - Professional"]
-  },
-  "errors": []
+ "status": "completed",
+ "job_requirements": {
+  "job_title": "Software Engineer - Cloud Infrastructure",
+  "company_name": "Acme Corp",
+  "location": "San Francisco, CA (Hybrid)",
+  "required_skills": ["Python", "Go", "AWS", "Kubernetes", "CI/CD"],
+  "preferred_skills": ["Terraform", "SRE", "Datadog", "gRPC"],
+  "years_experience_required": 5,
+  "tools_and_technologies": ["AWS EC2", "AWS S3", "Kubernetes", "Terraform"],
+  "education_requirements": ["BS in Computer Science or equivalent"],
+  "key_responsibilities": ["Design cloud-native microservices", "..."],
+  "employment_type": "Full-time",
+  "salary_range": "$180,000 - $240,000 + equity"
+ },
+ "candidate_profile": {
+  "candidate_name": "Jane Doe",
+  "contact_info": "jane.doe@email.com | ...",
+  "resume_skills": ["Python", "Go", "AWS", "Kubernetes", "Docker"],
+  "resume_experience": [
+   {
+    "title": "Senior Software Engineer",
+    "company": "TechCorp Inc.",
+    "duration": "Mar 2021 - Present",
+    "highlights": ["Led microservices migration", "..."]
+   }
+  ],
+  "total_years_experience": 7,
+  "resume_projects": [
+   {
+    "name": "Cloud Cost Optimizer",
+    "description": "Automated AWS cost analysis tool",
+    "technologies": ["Python", "Boto3", "Lambda"]
+   }
+  ],
+  "education": ["BS Computer Science, Stanford University, 2016"],
+  "certifications": ["AWS Solutions Architect - Professional"]
+ },
+ "errors": []
 }
 ```
 
@@ -363,14 +474,19 @@ the input contract for Task 3.
 
 ## Key Design Decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| OCR as a separate task | Isolates file handling from AI logic; easier to debug and test independently |
-| 7-step text cleaner | Removes OCR artifacts (smart quotes, zero-width chars, page numbers, broken hyphenation) before LLM processing |
-| Textract sync + async | Images use fast synchronous API; multi-page PDFs automatically fall back to async with polling |
-| LangGraph parallel fan-out | JD and resume extraction are independent reads — parallel execution halves latency |
-| Pydantic as the schema source | One model drives the prompt, validates the response, and types downstream code |
-| Bedrock client with dependency injection | Every service accepts an optional mock client; the full test suite runs without AWS credentials |
-| Errors accumulate, never crash | Both extraction nodes append to a shared error list; partial results are still usable |
-| Prompts separated from logic | Prompt templates live in their own module so you can iterate on wording without touching node code |
-| Temperature 0.0 for extraction | Deterministic output for structured JSON — no creativity needed here |
+| Decision                                      | Rationale                                                                                                                               |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| OCR as a separate task                        | Isolates file handling from AI logic; easier to debug and test independently                                                            |
+| 7-step text cleaner                           | Removes OCR artifacts (smart quotes, zero-width chars, page numbers, broken hyphenation) before LLM processing                          |
+| Textract sync + async                         | Images use fast synchronous API; multi-page PDFs automatically fall back to async with polling                                          |
+| LangGraph parallel fan-out                    | JD and resume extraction are independent reads — parallel execution halves latency                                                      |
+| Pydantic as the schema source                 | One model drives the prompt, validates the response, and types downstream code                                                          |
+| Bedrock client with dependency injection      | Every service accepts an optional mock client; the full test suite runs without AWS credentials                                         |
+| Errors accumulate, never crash                | All pipeline layers append to a shared error list; partial results are still usable                                                     |
+| Prompts separated from logic                  | Prompt templates live in their own module so you can iterate on wording without touching node code                                      |
+| Temperature 0.0 for extraction                | Deterministic output for structured JSON — no creativity needed in Task 2                                                               |
+| 5-layer comparison pipeline                   | Layers stop as soon as a match is found — exact/alias first (free), ontology next (cheap), semantic embeddings last (expensive)         |
+| sentence-transformers for semantic similarity | Local inference, no API cost, no rate limits; all-MiniLM-L6-v2 is fast on CPU and accurate enough for skill matching                    |
+| Temperature 0.3 for LLM insights              | Slightly creative for varied, personalized career advice — more expressive than extraction's 0.0                                        |
+| Education match via keyword intersection      | Extracts 4+ letter words from both degree strings and checks for overlap — tolerant of phrasing differences without needing an LLM call |
+| Experience fallback estimation                | When Bedrock can't parse years from dates, estimates conservatively from number of roles (0→0yr, 1→1yr, 2+→3yr) and notes it in errors  |

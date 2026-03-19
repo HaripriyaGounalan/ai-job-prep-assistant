@@ -1,0 +1,115 @@
+TD 
+Machine Learning Engineer 
+Job Position 
+Machine Learning Engineer at TD 
+About the job 
+Work Location: Toronto, Ontario, Canada 
+Hours: 37.5 
+Line Of Business: Analytics, Insights, & Artificial Intelligence 
+Pay Details: $120,000 - $250,000 CAD 
+The pay details posted reflect a temporary market premium specific to this role that is 
+reassessed annually. 
+TD is committed to providing fair and equitable compensation opportunities to all 
+colleagues. Growth opportunities and skill development are defining features of the 
+colleague experience at TD. Our compensation policies and practices have been designed 
+to allow colleagues to progress through the salary range over time as they progress in their 
+role. The base pay actually offered may vary based upon the candidate's skills and 
+experience, job-related knowledge, geographic location, and other specific business and 
+organizational needs. 
+As a candidate, you are encouraged to ask compensation related questions and have an 
+open dialogue with your recruiter who can provide you more specific details for this role. 
+Job Description 
+We are currently seeking talented individuals for a variety of positions, ranging from 
+junior to senior levels, and will evaluate your application in its entirety. 
+Layer 6 is the AI center of excellence for TD Bank Group. We develop and deploy industry
+leading machine learning systems that impact the lives of over 27 million customers, 
+helping more people achieve their financial goals and needs. 
+Our work spans the field of machine learning with areas such as deep learning and 
+generative AI, time series forecasting and responsible use of AI. We have access to massive 
+f
+inancial datasets and actively collaborate with world renowned academic faculty. We are 
+driven to be at the cutting edge of machine learning in research, engineering, and impactful 
+applications. 
+We are looking for world-class engineers to tackle cutting-edge problems in Machine 
+Learning applied to the real world. Work with large-scale, real-world datasets spanning 
+multiple modalities, ranging from banking transactions, conversation transcripts to large 
+document collections. 
+As a Machine Learning Engineer, You Will 
+• Join a world-class team of AI developers with an extensive track record of shipping 
+solutions at the cutting-edge 
+• Architect scalable machine learning and Gen AI systems that integrate with existing 
+data platform and infrastructure, focusing on automation, operation efficiency, and 
+reliability 
+• Write clean, efficient, and maintainable code for ML models to ensure efficient 
+deployment of scalable AI application 
+• Work with large-scale, real-world datasets that range from banking transactions, 
+conversation histories, to large document collections 
+• Grow by continuously learning new skills and exploring advanced topics in AI with a 
+team that thrives on knowledge-sharing 
+Required Qualifications 
+• Master or bachelor's degree in computer science, Statistics, Mathematics, 
+Engineering or a related field 
+• 3+ years of developer experience shipping code in production settings 
+• Strong background in machine learning and deep learning 
+• Strong coding proficiency in Python, Java, C, or C++ 
+• You value good software design and sweat over details in code and API design 
+• You take great personal pride in building robust and scalable software 
+• You are highly accountable and have a strong sense of ownership 
+• You strive to communicate clearly and with empathy 
+Preferred Qualifications 
+• Research experience with publication record 
+• Experience with LangGraph, Pytorch, Tensorflow, Jax, or comparable library 
+• Experience with building and scaling data-intensive software 
+• Experience using GPUs for accelerated deep learning training 
+Who We Are 
+TD is one of the world's leading global financial institutions and is the fifth largest bank in 
+North America by branches/stores. Every day, we deliver legendary customer experiences 
+to over 27 million households and businesses in Canada, the United States and around the 
+world. More than 95,000 TD colleagues bring their skills, talent, and creativity to the Bank, 
+those we serve, and the economies we support. We are guided by our vision to Be the 
+Better Bank and our purpose to enrich the lives of our customers, communities and 
+colleagues. 
+TD is deeply committed to being a leader in customer experience, that is why we believe 
+that all colleagues, no matter where they work, are customer facing. As we build our 
+business and deliver on our strategy, we are innovating to enhance the customer 
+experience and build capabilities to shape the future of banking. Whether you’ve got years 
+of banking experience or are just starting your career in financial services, we can help you 
+realize your potential. Through regular leadership and development conversations to 
+mentorship and training programs, we’re here to support you towards your goals. As an 
+organization, we keep growing – and so will you. 
+Our Total Rewards Package 
+Our Total Rewards package reflects the investments we make in our colleagues to help 
+them and their families achieve their financial, physical, and mental well-being goals. Total 
+Rewards at TD includes a base salary, variable compensation, and several other key plans 
+such as health and well-being benefits, savings and retirement programs, paid time off, 
+banking benefits and discounts, career development, and reward and recognition 
+programs. Learn more 
+Additional Information 
+We’re delighted that you’re considering building a career with TD. Through regular 
+development conversations, training programs, and a competitive benefits plan, we’re 
+committed to providing the support our colleagues need to thrive both at work and at 
+home. 
+Please be advised that this job opportunity is subject to provincial regulation for 
+employment purposes. It is imperative to acknowledge that each province or territory 
+within the jurisdiction of Canada may have its own set of regulations, requirements. 
+Colleague Development  
+If you’re interested in a specific career path or are looking to build certain skills, we want to 
+help you succeed. You’ll have regular career, development, and performance 
+conversations with your manager, as well as access to an online learning platform and a 
+variety of mentoring programs to help you unlock future opportunities. Whether you have a 
+passion for helping customers and want to expand your experience, or you want to coach 
+and inspire your colleagues, there are many different career paths within our organization 
+at TD – and we’re committed to helping you identify opportunities that support your goals. 
+Training & Onboarding 
+We will provide training and onboarding sessions to ensure that you’ve got everything you 
+need to succeed in your new role. 
+Interview Process  
+We’ll reach out to candidates of interest to schedule an interview. We do our best to 
+communicate outcomes to all applicants by email or phone call. 
+Accommodation  
+Your accessibility is important to us. Please let us know if you’d like accommodations 
+(including accessible meeting rooms, captioning for virtual interviews, etc.) to help us 
+remove barriers so that you can participate throughout the interview process. 
+We look forward to hearing from you! 
+Language Requirement (Quebec Only) 
+Sans Objet 

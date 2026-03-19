@@ -1,0 +1,333 @@
+{
+  "task2": {
+    "resume_text": "J ohn Doe \nS O F T WARE ENGINEER \n666 999 0000    |    xxx@my.centennialcollege.ca   |     Toronto, ON \nP ROFILE SUMMARY \nA highly motivated Software Developer with a passion for solving complex problems and delivering impactful solutions. Excels at \nadapting to challenges by leveraging strong analytical thinking, time management, and collaboration skills to create value and \nachieve meaningful outcomes. A dedicated team player and quick learner with strong problem-solving abilities, system design \nknowledge, and experience in software development and testing. Possesses strengths in data analytics, data visualization, \nmodeling, and reporting, with proficiency in SQL, Python, Machine Learning, and Java. \nT ECHNICAL SKILLS \n• Backend Development: Java, Python, Node.js, C#, Flask \n• Frontend Development: React.js, Redux, Angular, HTML, CSS, Bootstrap, JavaScript, Tkinter \n• Database Management: MySQL, PostgreSQL, MongoDB, SQL \n• Machine Learning: Pandas, NumPy, Scikit-learn, TensorFlow, Keras \n• System Development: UML Diagrams, Object-Oriented Design, Agile Development \n• Tools: Figma, Lucidchart, Visio, Visual Paradigm, Jira, Git, Visual Studio Code, IntelliJ IDEA, SharePoint, Spyder \nWORK EXPERIENCE \nHealthcare Systems R&A Inc. (May. 2025 - Present) \nRole: Software Engineer Research Assistant (AI) \n• Contributed to the development of machine learning models for chronic back pain and mineral exploration using \nTensorFlow, Keras, and Neural Networks. \n• Assisted in automating the extraction of key points from images, converting them to JSON and then CSV for preprocessing. \n• Worked with the team to optimize model architecture, improving accuracy and performance. \nKaanchy - E-Commerce Web Application (Mar.2023 - Oct.2024) \nRole: UI developer, Inventory Manager, Customer Support \n• Designed and developed an e-commerce web application for selling ethnic clothing. \n• Implemented inventory management features to facilitate real-time stock updates and efficient order tracking. \n• Managed customer support operations, delivering prompt and personalized responses to address customer needs, \nincluding effectively handling challenging situations and ensuring high satisfaction. \nE DUCATION \nSoftware Engineering Technology (Fast Track) - Artificial Intelligence (Co-op) - GPA: 4.45 / 4.5 (Sept. 2024-Present) \nCentennial College, Toronto, ON                                                                                                        \nExpected Graduation: Dec. 2026\nSoftware Engineering Technology (Fast Track) - Advanced Diploma - GPA: 4.38 / 4.5 (Jan. 2019 - Aug. 2019) \nCentennial College, Toronto, ON \nBachelor of Technology - Information Technology - GPA: 9.28 / 10 (Aug. 2012 - June. 2016) \nSri Manakula Vinayagar Engineering College (SMVEC), Puducherry, India \nA CADEMIC PROJECTS \nAI Project - Toronto Accident Prediction (Mar. 2025 - Apr. 2025)     \nRole: UI Designer, UI Developer, AI Developer  \n• Developed an SVM model and implemented ensemble techniques including hard and soft voting across five machine \nlearning models. \n• Handled preprocessing, feature engineering, and class imbalance. \n• Designed and developed a user interface for model analytics and comparative visualization. \n• Utilized tools and libraries such as Scikit-learn, NumPy, Pandas, Seaborn, and Matplotlib. \nAI Project - YouTube Spam Classifier (Dec. 2024 - Dec. 2024)     \nRole: Project Coordinator, Developer  \n• Led the development of a machine learning spam classifier for YouTube comments, improving detection accuracy by \n15%. \n• Used scikit-learn, NumPy, Seaborn, and Matplotlib for data preprocessing, visualization, and model building. \n• Wrote and optimized Python code to handle large YouTube API datasets and conducted cross-validation for accuracy and \nrobustness. \nBeatSnap - Social Media Web Application (Nov. 2024 - Dec. 2024)  \nRole: UI Designer, UI Developer  \n• Designed app wireframes in Figma, optimizing user experience and navigation. \n• Developed frontend with React, Redux, and styled with Bootstrap/CSS. \n• Overcame a challenging issue with iframe functionality, implementing a solution to control video playback, ensuring only \none video played at a time.  \n• Integrated YouTube, Spotify and application APIs with the frontend to enable dynamic content and enhance user \ninteractions. \nMindTrack - Software System Design (Sep. 2024 - Dec. 2024) \nRole: Project Coordinator, System Designer, System Analyst \n• Led design and development of MindTrack, a mobile app to improve time management and productivity. \n• Collaborated on defining system requirements, software architecture, and Agile development. \n• Used Lucidchart, Visio, Visual Paradigm, and Jira for system design, documentation, and project management. \nHONORS & AWARDS \nAcademic Excellence Merit Award in Information Technology (Jan.2016) \nFor Securing 1st Rank at the College | SMVEC | Puducherry, India \nState-Level 2nd Rank Holder in Information Technology (June. 2016) \nPondicherry University | Puducherry, India \nC OURSE WORK \n• Data Structures and Algorithms \n• Machine Learning & AI \n• Advanced Database Concepts \n• Mobile App Development \n• Web Development \n• UI/UX Design \n• Object Oriented Programming \n• Linear Algebra and Statistics \n• Leadership \nP ROFESSIONAL DEVELOPMENT \nUnsupervised Learning, Recommenders, Reinforcement Learning                                                                               \nCoursera (Remote) | Certificate \nAI Product Foundations: Planning Strategies for Data Scientists                                                                                   \nLinkedIn (Remote) | Certificate \nSupervised Machine Learning: Regression and Classification \nCoursera (Remote) | Certificate \nAdvanced Learning Algorithms \nCoursera (Remote) | Certificate \nMay. 2025 \nFeb. 2025 \nJan. 2025 \nJan. 2025 ",
+    "job_description_text": "TD \nMachine Learning Engineer \nJob Position \nMachine Learning Engineer at TD \nAbout the job \nWork Location: Toronto, Ontario, Canada \nHours: 37.5 \nLine Of Business: Analytics, Insights, & Artificial Intelligence \nPay Details: $120,000 - $250,000 CAD \nThe pay details posted reflect a temporary market premium specific to this role that is \nreassessed annually. \nTD is committed to providing fair and equitable compensation opportunities to all \ncolleagues. Growth opportunities and skill development are defining features of the \ncolleague experience at TD. Our compensation policies and practices have been designed \nto allow colleagues to progress through the salary range over time as they progress in their \nrole. The base pay actually offered may vary based upon the candidate's skills and \nexperience, job-related knowledge, geographic location, and other specific business and \norganizational needs. \nAs a candidate, you are encouraged to ask compensation related questions and have an \nopen dialogue with your recruiter who can provide you more specific details for this role. \nJob Description \nWe are currently seeking talented individuals for a variety of positions, ranging from \njunior to senior levels, and will evaluate your application in its entirety. \nLayer 6 is the AI center of excellence for TD Bank Group. We develop and deploy industry\nleading machine learning systems that impact the lives of over 27 million customers, \nhelping more people achieve their financial goals and needs. \nOur work spans the field of machine learning with areas such as deep learning and \ngenerative AI, time series forecasting and responsible use of AI. We have access to massive \nf\ninancial datasets and actively collaborate with world renowned academic faculty. We are \ndriven to be at the cutting edge of machine learning in research, engineering, and impactful \napplications. \nWe are looking for world-class engineers to tackle cutting-edge problems in Machine \nLearning applied to the real world. Work with large-scale, real-world datasets spanning \nmultiple modalities, ranging from banking transactions, conversation transcripts to large \ndocument collections. \nAs a Machine Learning Engineer, You Will \n• Join a world-class team of AI developers with an extensive track record of shipping \nsolutions at the cutting-edge \n• Architect scalable machine learning and Gen AI systems that integrate with existing \ndata platform and infrastructure, focusing on automation, operation efficiency, and \nreliability \n• Write clean, efficient, and maintainable code for ML models to ensure efficient \ndeployment of scalable AI application \n• Work with large-scale, real-world datasets that range from banking transactions, \nconversation histories, to large document collections \n• Grow by continuously learning new skills and exploring advanced topics in AI with a \nteam that thrives on knowledge-sharing \nRequired Qualifications \n• Master or bachelor's degree in computer science, Statistics, Mathematics, \nEngineering or a related field \n• 3+ years of developer experience shipping code in production settings \n• Strong background in machine learning and deep learning \n• Strong coding proficiency in Python, Java, C, or C++ \n• You value good software design and sweat over details in code and API design \n• You take great personal pride in building robust and scalable software \n• You are highly accountable and have a strong sense of ownership \n• You strive to communicate clearly and with empathy \nPreferred Qualifications \n• Research experience with publication record \n• Experience with LangGraph, Pytorch, Tensorflow, Jax, or comparable library \n• Experience with building and scaling data-intensive software \n• Experience using GPUs for accelerated deep learning training \nWho We Are \nTD is one of the world's leading global financial institutions and is the fifth largest bank in \nNorth America by branches/stores. Every day, we deliver legendary customer experiences \nto over 27 million households and businesses in Canada, the United States and around the \nworld. More than 95,000 TD colleagues bring their skills, talent, and creativity to the Bank, \nthose we serve, and the economies we support. We are guided by our vision to Be the \nBetter Bank and our purpose to enrich the lives of our customers, communities and \ncolleagues. \nTD is deeply committed to being a leader in customer experience, that is why we believe \nthat all colleagues, no matter where they work, are customer facing. As we build our \nbusiness and deliver on our strategy, we are innovating to enhance the customer \nexperience and build capabilities to shape the future of banking. Whether you’ve got years \nof banking experience or are just starting your career in financial services, we can help you \nrealize your potential. Through regular leadership and development conversations to \nmentorship and training programs, we’re here to support you towards your goals. As an \norganization, we keep growing – and so will you. \nOur Total Rewards Package \nOur Total Rewards package reflects the investments we make in our colleagues to help \nthem and their families achieve their financial, physical, and mental well-being goals. Total \nRewards at TD includes a base salary, variable compensation, and several other key plans \nsuch as health and well-being benefits, savings and retirement programs, paid time off, \nbanking benefits and discounts, career development, and reward and recognition \nprograms. Learn more \nAdditional Information \nWe’re delighted that you’re considering building a career with TD. Through regular \ndevelopment conversations, training programs, and a competitive benefits plan, we’re \ncommitted to providing the support our colleagues need to thrive both at work and at \nhome. \nPlease be advised that this job opportunity is subject to provincial regulation for \nemployment purposes. It is imperative to acknowledge that each province or territory \nwithin the jurisdiction of Canada may have its own set of regulations, requirements. \nColleague Development  \nIf you’re interested in a specific career path or are looking to build certain skills, we want to \nhelp you succeed. You’ll have regular career, development, and performance \nconversations with your manager, as well as access to an online learning platform and a \nvariety of mentoring programs to help you unlock future opportunities. Whether you have a \npassion for helping customers and want to expand your experience, or you want to coach \nand inspire your colleagues, there are many different career paths within our organization \nat TD – and we’re committed to helping you identify opportunities that support your goals. \nTraining & Onboarding \nWe will provide training and onboarding sessions to ensure that you’ve got everything you \nneed to succeed in your new role. \nInterview Process  \nWe’ll reach out to candidates of interest to schedule an interview. We do our best to \ncommunicate outcomes to all applicants by email or phone call. \nAccommodation  \nYour accessibility is important to us. Please let us know if you’d like accommodations \n(including accessible meeting rooms, captioning for virtual interviews, etc.) to help us \nremove barriers so that you can participate throughout the interview process. \nWe look forward to hearing from you! \nLanguage Requirement (Quebec Only) \nSans Objet ",
+    "job_requirements": {
+      "job_title": "Machine Learning Engineer",
+      "company_name": "TD",
+      "location": "Toronto, Ontario, Canada",
+      "required_skills": [
+        "Python",
+        "Java",
+        "C",
+        "C++",
+        "Machine Learning",
+        "Deep Learning"
+      ],
+      "preferred_skills": [
+        "LangGraph",
+        "PyTorch",
+        "TensorFlow",
+        "JAX",
+        "GPU Computing",
+        "Research"
+      ],
+      "years_experience_required": 3,
+      "education_requirements": [
+        "Bachelor's degree in Computer Science, Statistics, Mathematics, Engineering or related field",
+        "Master's degree in Computer Science, Statistics, Mathematics, Engineering or related field"
+      ],
+      "tools_and_technologies": [
+        "LangGraph",
+        "PyTorch",
+        "TensorFlow",
+        "JAX",
+        "GPUs"
+      ],
+      "key_responsibilities": [
+        "Join a world-class team of AI developers with an extensive track record of shipping solutions at the cutting-edge",
+        "Architect scalable machine learning and Gen AI systems that integrate with existing data platform and infrastructure, focusing on automation, operation efficiency, and reliability",
+        "Write clean, efficient, and maintainable code for ML models to ensure efficient deployment of scalable AI application",
+        "Work with large-scale, real-world datasets that range from banking transactions, conversation histories, to large document collections",
+        "Grow by continuously learning new skills and exploring advanced topics in AI with a team that thrives on knowledge-sharing"
+      ],
+      "employment_type": "Full-time",
+      "salary_range": "$120,000 - $250,000 CAD"
+    },
+    "candidate_profile": {
+      "candidate_name": "John Doe",
+      "contact_info": "666 999 0000 | xxx@my.centennialcollege.ca | Toronto, ON",
+      "resume_skills": [
+        "Java",
+        "Python",
+        "Node.js",
+        "C#",
+        "Flask",
+        "React",
+        "Redux",
+        "Angular",
+        "HTML",
+        "CSS",
+        "Bootstrap",
+        "JavaScript",
+        "Tkinter",
+        "MySQL",
+        "PostgreSQL",
+        "MongoDB",
+        "SQL",
+        "Pandas",
+        "NumPy",
+        "Scikit-learn",
+        "TensorFlow",
+        "Keras",
+        "UML",
+        "Object-Oriented Design",
+        "Agile Development",
+        "Figma",
+        "Lucidchart",
+        "Visio",
+        "Visual Paradigm",
+        "Jira",
+        "Git",
+        "Visual Studio Code",
+        "IntelliJ IDEA",
+        "SharePoint",
+        "Spyder",
+        "Neural Networks",
+        "Machine Learning",
+        "Data Analytics",
+        "Data Visualization",
+        "Seaborn",
+        "Matplotlib",
+        "System Design",
+        "UI/UX Design",
+        "Project Management",
+        "Problem-solving",
+        "Team Collaboration",
+        "Time Management"
+      ],
+      "resume_experience": [
+        {
+          "title": "Software Engineer Research Assistant (AI)",
+          "company": "Healthcare Systems R&A Inc.",
+          "duration": "May 2025 - Present",
+          "highlights": [
+            "Contributed to the development of machine learning models for chronic back pain and mineral exploration using TensorFlow, Keras, and Neural Networks",
+            "Assisted in automating the extraction of key points from images, converting them to JSON and then CSV for preprocessing",
+            "Worked with the team to optimize model architecture, improving accuracy and performance"
+          ]
+        },
+        {
+          "title": "UI Developer, Inventory Manager, Customer Support",
+          "company": "Kaanchy - E-Commerce Web Application",
+          "duration": "Mar 2023 - Oct 2024",
+          "highlights": [
+            "Designed and developed an e-commerce web application for selling ethnic clothing",
+            "Implemented inventory management features to facilitate real-time stock updates and efficient order tracking",
+            "Managed customer support operations, delivering prompt and personalized responses to address customer needs"
+          ]
+        }
+      ],
+      "total_years_experience": 2,
+      "resume_experience_summary": "John Doe is a Software Engineer with expertise in full-stack development, machine learning, and AI applications. He has demonstrated proficiency across backend technologies (Java, Python, Node.js), frontend frameworks (React, Angular), and machine learning libraries (TensorFlow, Scikit-learn), with recent focus on AI-driven solutions in healthcare and e-commerce domains. His background combines academic excellence with practical experience in system design, data analytics, and collaborative development environments.",
+      "resume_projects": [
+        {
+          "name": "Toronto Accident Prediction",
+          "description": "Developed an SVM model and implemented ensemble techniques including hard and soft voting across five machine learning models for accident prediction. Handled preprocessing, feature engineering, and class imbalance. Designed and developed a user interface for model analytics and comparative visualization.",
+          "technologies": [
+            "SVM",
+            "Scikit-learn",
+            "NumPy",
+            "Pandas",
+            "Seaborn",
+            "Matplotlib"
+          ]
+        },
+        {
+          "name": "YouTube Spam Classifier",
+          "description": "Led the development of a machine learning spam classifier for YouTube comments, improving detection accuracy by 15%. Used scikit-learn, NumPy, Seaborn, and Matplotlib for data preprocessing, visualization, and model building. Wrote and optimized Python code to handle large YouTube API datasets and conducted cross-validation.",
+          "technologies": [
+            "Python",
+            "Scikit-learn",
+            "NumPy",
+            "Seaborn",
+            "Matplotlib",
+            "YouTube API"
+          ]
+        },
+        {
+          "name": "BeatSnap - Social Media Web Application",
+          "description": "Designed app wireframes in Figma, optimizing user experience and navigation. Developed frontend with React, Redux, and styled with Bootstrap/CSS. Overcame a challenging issue with iframe functionality, implementing a solution to control video playback. Integrated YouTube, Spotify and application APIs with the frontend.",
+          "technologies": [
+            "React",
+            "Redux",
+            "Bootstrap",
+            "CSS",
+            "Figma",
+            "YouTube API",
+            "Spotify API"
+          ]
+        },
+        {
+          "name": "MindTrack - Software System Design",
+          "description": "Led design and development of MindTrack, a mobile app to improve time management and productivity. Collaborated on defining system requirements, software architecture, and Agile development. Used Lucidchart, Visio, Visual Paradigm, and Jira for system design, documentation, and project management.",
+          "technologies": [
+            "Lucidchart",
+            "Visio",
+            "Visual Paradigm",
+            "Jira",
+            "Agile Development"
+          ]
+        }
+      ],
+      "education": [
+        "Software Engineering Technology (Fast Track) - Artificial Intelligence (Co-op), Centennial College, Toronto, ON (Sept 2024 - Expected Dec 2026, GPA: 4.45/4.5)",
+        "Software Engineering Technology (Fast Track) - Advanced Diploma, Centennial College, Toronto, ON (Jan 2019 - Aug 2019, GPA: 4.38/4.5)",
+        "Bachelor of Technology - Information Technology, Sri Manakula Vinayagar Engineering College (SMVEC), Puducherry, India (Aug 2012 - June 2016, GPA: 9.28/10)"
+      ],
+      "certifications": [
+        "Unsupervised Learning, Recommenders, Reinforcement Learning - Coursera",
+        "AI Product Foundations: Planning Strategies for Data Scientists - LinkedIn",
+        "Supervised Machine Learning: Regression and Classification - Coursera",
+        "Advanced Learning Algorithms - Coursera"
+      ]
+    },
+    "errors": [],
+    "status": "completed"
+  },
+  "task3": {
+    "overall_score": 55.3,
+    "skill_score": 52.5,
+    "experience_score": 66.7,
+    "education_matched": true,
+    "required_skill_matches": [
+      {
+        "skill": "python",
+        "match_type": "exact",
+        "score": 1.0,
+        "matched_to": "python"
+      },
+      {
+        "skill": "java",
+        "match_type": "exact",
+        "score": 1.0,
+        "matched_to": "java"
+      },
+      {
+        "skill": "c",
+        "match_type": "none",
+        "score": 0.0,
+        "matched_to": null
+      },
+      {
+        "skill": "c++",
+        "match_type": "none",
+        "score": 0.0,
+        "matched_to": null
+      },
+      {
+        "skill": "machine learning",
+        "match_type": "exact",
+        "score": 1.0,
+        "matched_to": "machine learning"
+      },
+      {
+        "skill": "deep learning",
+        "match_type": "related",
+        "score": 0.75,
+        "matched_to": "machine learning"
+      }
+    ],
+    "preferred_skill_matches": [
+      {
+        "skill": "langgraph",
+        "match_type": "none",
+        "score": 0.0,
+        "matched_to": null
+      },
+      {
+        "skill": "pytorch",
+        "match_type": "related",
+        "score": 0.75,
+        "matched_to": "tensorflow"
+      },
+      {
+        "skill": "tensorflow",
+        "match_type": "exact",
+        "score": 1.0,
+        "matched_to": "tensorflow"
+      },
+      {
+        "skill": "jax",
+        "match_type": "none",
+        "score": 0.0,
+        "matched_to": null
+      },
+      {
+        "skill": "gpu computing",
+        "match_type": "none",
+        "score": 0.0,
+        "matched_to": null
+      },
+      {
+        "skill": "research",
+        "match_type": "none",
+        "score": 0.0,
+        "matched_to": null
+      }
+    ],
+    "missing_required_skills": [
+      "c",
+      "c++"
+    ],
+    "missing_preferred_skills": [
+      "langgraph",
+      "jax",
+      "gpu computing",
+      "research"
+    ],
+    "strengths_summary": "The candidate demonstrates solid foundational ML knowledge with hands-on experience in Python, TensorFlow, Keras, and core ML libraries (Pandas, NumPy, Scikit-learn). Their Java proficiency and full-stack development background (Flask, React, databases) position them well to architect scalable systems and write maintainable code. At 2 years of experience, they show promising trajectory with relevant ML and system design skills.",
+    "gaps_summary": "The candidate lacks C and C++ proficiency, which are required skills for this role—critical for performance-critical ML systems and infrastructure optimization. Additionally, they have no demonstrated experience with advanced frameworks (LangGraph, JAX), GPU computing optimization, or research-level work. These gaps suggest limited exposure to production-scale ML systems and cutting-edge AI development practices that the role emphasizes.",
+    "upskilling_recommendations": [
+      {
+        "skill": "C Programming",
+        "reason": "Required skill for the role; essential for writing performance-critical components in ML systems and understanding low-level memory management in production environments.",
+        "resource": "\"The C Programming Language\" by Kernighan & Ritchie (2nd edition) + LeetCode C problems for practical reinforcement"
+      },
+      {
+        "skill": "C++ Programming",
+        "reason": "Required skill for the role; widely used in high-performance ML inference engines and system-level optimization, particularly for GPU-accelerated workloads.",
+        "resource": "\"C++ Primer\" by Lippman et al. (5th edition) combined with Coursera's \"C++ for C Programmers\" course"
+      },
+      {
+        "skill": "GPU Computing & CUDA",
+        "reason": "Preferred skill critical for scaling ML models; directly applicable to the role's focus on large-scale datasets and efficient deployment of AI applications.",
+        "resource": "NVIDIA's official CUDA C Programming Guide + Udacity's \"Intro to Parallel Programming\" course"
+      },
+      {
+        "skill": "JAX Framework",
+        "reason": "Preferred skill for advanced ML research and production systems; enables functional programming paradigms for composable, differentiable computing at scale.",
+        "resource": "Official JAX documentation (jax.readthedocs.io) + DeepMind's JAX tutorials and \"JAX: Composable transformations of Python+NumPy programs\""
+      },
+      {
+        "skill": "LangGraph & LLM System Architecture",
+        "reason": "Preferred skill reflecting the role's Gen AI focus; essential for architecting stateful, multi-agent AI systems that integrate with existing infrastructure.",
+        "resource": "LangChain/LangGraph official documentation + DeepLearning.AI's \"Building Agentic Systems\" course"
+      }
+    ],
+    "interview_questions": [
+      {
+        "question": "Walk us through a machine learning project you've built from scratch. What was your approach to data preprocessing, model selection, and evaluation? How did you ensure your code was production-ready?",
+        "category": "technical"
+      },
+      {
+        "question": "Describe your experience with TensorFlow and Keras. Have you optimized a model for inference performance or deployed one to production? What challenges did you face?",
+        "category": "technical"
+      },
+      {
+        "question": "Tell us about a time when you had to collaborate with team members who had different technical backgrounds. How did you communicate complex ML concepts and ensure alignment on project goals?",
+        "category": "behavioral"
+      },
+      {
+        "question": "Imagine you're tasked with integrating a new ML model into an existing banking data platform that processes millions of transactions daily. The model needs to run in real-time with minimal latency. What would be your first steps, and what challenges would you anticipate?",
+        "category": "situational"
+      },
+      {
+        "question": "You discover that your ML model performs well in testing but degrades significantly on production data. How would you diagnose the issue, and what strategies would you use to improve robustness?",
+        "category": "situational"
+      }
+    ],
+    "salary_insight": "The posted range of $120,000–$250,000 CAD is appropriate for this senior ML engineering role at TD. Given the candidate's 2 years of experience and foundational ML skills, they would likely enter at the lower end (~$120,000–$150,000) pending successful demonstration of system design capability and gap closure on C/C++ and GPU computing.",
+    "errors": []
+  }
+}

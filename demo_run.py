@@ -35,7 +35,9 @@ from config.settings import config
 from ocr_pipeline.pipeline import OCRPipeline
 from ocr_pipeline.models import FileType
 from extraction_pipeline.graph import run_extraction
+from extraction_pipeline.models import ExtractionState
 from extraction_pipeline.llm_client import BedrockClient
+from comparison_pipeline.run_comparison import run_comparison
 
 
 def setup_logging(verbose: bool = False) -> None:
@@ -209,16 +211,107 @@ def run_task2(resume_text: str, job_description_text: str) -> dict:
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Task 3: Comparison, Scoring, Recommendations
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def run_task3(extraction_state: ExtractionState) -> dict:
+    """
+    Run the comparison pipeline on extraction results.
+
+    Returns the full ComparisonResult as a dict.
+    """
+    print("\n" + "=" * 70)
+    print("  TASK 3: Comparison, Scoring & Recommendations")
+    print("=" * 70)
+
+    jr = extraction_state.job_requirements
+    cp = extraction_state.candidate_profile
+    if jr:
+        print(f"\n  Job title:          {jr.job_title}")
+        print(f"  Required skills:    {len(jr.required_skills)}")
+        print(f"  Preferred skills:   {len(jr.preferred_skills)}")
+    if cp:
+        print(f"  Resume skills:      {len(cp.resume_skills)}")
+        print(f"  Experience entries: {len(cp.resume_experience)}")
+    print("-" * 70)
+
+    print("\n  Running comparison pipeline...")
+    result = run_comparison(extraction_state)
+
+    print(f"\n  Overall Score:    {result.overall_score:.1f}%")
+    print(f"  Skill Score:      {result.skill_score:.1f}%")
+    if result.experience_score is not None:
+        print(f"  Experience Score: {result.experience_score:.1f}%")
+    else:
+        print(f"  Experience Score: N/A (no requirement specified)")
+    print(f"  Education Match:  {'Yes' if result.education_matched else 'No'}")
+
+    if result.missing_required_skills:
+        print(f"\n  Missing Required Skills ({len(result.missing_required_skills)}):")
+        for skill in result.missing_required_skills:
+            print(f"    - {skill}")
+
+    if result.missing_preferred_skills:
+        print(f"\n  Missing Preferred Skills ({len(result.missing_preferred_skills)}):")
+        for skill in result.missing_preferred_skills:
+            print(f"    - {skill}")
+
+    print(f"\n  [Required Skill Matches]")
+    for m in result.required_skill_matches:
+        status = f"{m.match_type} ({m.score:.2f})"
+        matched = f" -> {m.matched_to}" if m.matched_to else ""
+        print(f"    {m.skill}: {status}{matched}")
+
+    print(f"\n  [Preferred Skill Matches]")
+    for m in result.preferred_skill_matches:
+        status = f"{m.match_type} ({m.score:.2f})"
+        matched = f" -> {m.matched_to}" if m.matched_to else ""
+        print(f"    {m.skill}: {status}{matched}")
+
+    if result.strengths_summary:
+        print(f"\n  [Strengths]")
+        print(f"    {result.strengths_summary}")
+
+    if result.gaps_summary:
+        print(f"\n  [Gaps]")
+        print(f"    {result.gaps_summary}")
+
+    if result.upskilling_recommendations:
+        print(f"\n  [Upskilling Recommendations]")
+        for rec in result.upskilling_recommendations:
+            print(f"    {rec.skill}: {rec.reason}")
+            print(f"      Resource: {rec.resource}")
+
+    if result.interview_questions:
+        print(f"\n  [Interview Questions]")
+        for q in result.interview_questions:
+            print(f"    [{q.category}] {q.question}")
+
+    if result.salary_insight:
+        print(f"\n  [Salary Insight]")
+        print(f"    {result.salary_insight}")
+
+    if result.errors:
+        print(f"\n  Errors ({len(result.errors)}):")
+        for err in result.errors:
+            print(f"    - {err}")
+
+    print("-" * 70)
+
+    return result.model_dump()
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #  CLI
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Demo: Run Task 1 + Task 2 against real AWS services",
+        description="Demo: Run Task 1 + Task 2 + Task 3 against real AWS services",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Full pipeline (OCR → extraction)
+  # Full pipeline (OCR → extraction → comparison)
   python demo_run.py --resume resume.pdf --job-desc jd.png
 
   # Task 1 only
@@ -226,6 +319,9 @@ Examples:
 
   # Task 2 only (provide pre-extracted text files)
   python demo_run.py --resume-text resume.txt --jd-text jd.txt --step 2
+
+  # Task 3 only (provide pre-extracted text files, runs Task 2 + Task 3)
+  python demo_run.py --resume-text resume.txt --jd-text jd.txt --step 3
 
   # Save JSON output
   python demo_run.py --resume resume.pdf --job-desc jd.png -o result.json
@@ -254,8 +350,8 @@ Examples:
 
     # Control
     parser.add_argument(
-        "--step", type=int, choices=[1, 2],
-        help="Run only Task 1 or Task 2 (default: both)",
+        "--step", type=int, choices=[1, 2, 3],
+        help="Run only Task 1, 2, or 3 (default: all)",
     )
     parser.add_argument(
         "--output", "-o",
@@ -271,7 +367,8 @@ Examples:
 
     # ── Validate arguments ─────────────────────────────────────────────
     run_step1 = args.step is None or args.step == 1
-    run_step2 = args.step is None or args.step == 2
+    run_step2 = args.step is None or args.step in (2, 3)
+    run_step3 = args.step is None or args.step == 3
 
     if run_step1 and (not args.resume or not args.job_desc):
         parser.error(
@@ -279,9 +376,9 @@ Examples:
             "Or use --step 2 with --resume-text and --jd-text to skip OCR."
         )
 
-    if args.step == 2 and (not args.resume_text or not args.jd_text):
+    if args.step in (2, 3) and (not args.resume_text or not args.jd_text):
         parser.error(
-            "Task 2 standalone requires --resume-text and --jd-text "
+            "Task 2/3 standalone requires --resume-text and --jd-text "
             "(plain text files)."
         )
 
@@ -318,6 +415,17 @@ Examples:
         task2_result = run_task2(resume_text, jd_text)
         full_output["task2"] = task2_result
 
+    # Task 3
+    if run_step3:
+        if "task2" in full_output:
+            extraction_state = ExtractionState.model_validate(full_output["task2"])
+        else:
+            print("\n  ERROR: Task 3 requires Task 2 output. Run without --step or use --step 3.")
+            sys.exit(1)
+
+        task3_result = run_task3(extraction_state)
+        full_output["task3"] = task3_result
+
     # ── Final output ───────────────────────────────────────────────────
     print("\n" + "=" * 70)
     print("  COMPLETE")
@@ -325,10 +433,8 @@ Examples:
 
     if args.output:
         output_path = Path(args.output)
-        output_path.write_text(
-            json.dumps(full_output, indent=2, default=str),
-            encoding="utf-8",
-        )
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(full_output, f, indent=2, default=str, ensure_ascii=False)
         print(f"\n  Full JSON output saved to: {output_path.resolve()}")
     else:
         print("\n  Tip: Use --output result.json to save the full output")
