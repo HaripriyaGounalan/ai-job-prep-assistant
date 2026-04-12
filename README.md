@@ -1,9 +1,11 @@
-# AI Job Preparation Assistant
+# Aligno
 
 A cloud-based AI pipeline for a Machine Learning school project. Users upload a
 resume and a job description (PDF or screenshot). The system extracts text,
 identifies required skills, compares them with the resume, computes a match
 score, estimates salary range, and generates interview preparation questions.
+The repo now also includes the Aligno frontend, a Bun + Vite + shadcn/ui app
+with a live upload flow, polling dashboard, and light/dark theme toggle.
 
 ---
 
@@ -22,7 +24,7 @@ score, estimates salary range, and generates interview preparation questions.
 
 | Task | Name                       | Description                                                                                                                           | Status      |
 | ---- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| 5    | React + shadcn/ui Frontend | Upload UI, processing status, results dashboard with score card, skills gap table, recommendation cards, interview question accordion | Not started |
+| 5    | React + shadcn/ui Frontend | Upload UI, processing status, results dashboard with score card, skills gap table, recommendation cards, interview question cards | Done        |
 
 ### How Tasks 1 → 2 → 3 connect
 
@@ -45,6 +47,13 @@ It uses non-blocking `BackgroundTasks` to orchestrate the entire end-to-end flow
 1. `POST /upload` accepts files and instantly returns a tracking UUID.
 2. The background worker uploads files, runs OCR, triggers Bedrock extraction, evaluates the CV, and dumps the final JSON state to S3.
 3. The frontend safely polls AWS S3 via `GET /status/{job_id}` and `GET /result/{job_id}` without hanging or suffering from proxy timeouts.
+
+### How Task 5 (Frontend UI) fits in
+
+**Task 5** adds a Bun-powered React frontend in `frontend/` built with Vite and
+shadcn/ui. It lets users upload both files, watch live progress via polling,
+review the comparison dashboard, inspect skill gaps, and switch between light
+and dark themes.
 
 ---
 
@@ -123,6 +132,14 @@ job-prep-assistant/
 │   ├── schemas.py                   # Pydantic models for API request/response validation
 │   └── services.py                  # Background task worker orchestrating Tasks 1-3 sequentially
 │
+├── frontend/                        # ── TASK 5: Bun + Vite + shadcn/ui Frontend ──
+│   ├── src/
+│   │   ├── App.tsx                  # Main upload workspace + results dashboard
+│   │   ├── components/              # Theme toggle + shadcn UI components
+│   │   └── lib/                     # API/result types + preview data
+│   ├── package.json
+│   └── components.json              # shadcn/ui configuration
+│
 ├── tests/
 │   ├── __init__.py
 │   ├── fixtures.py                  # Shared sample texts + mock LLM responses
@@ -198,6 +215,17 @@ job-prep-assistant/
 | `pytest-mock`       | >= 3.12.0 | Mock utilities                              |
 | `moto[s3,textract]` | >= 5.0.0  | AWS service mocking (no credentials needed) |
 
+### Frontend toolchain
+
+| Package         | Version | Purpose                                              |
+| --------------- | ------- | ---------------------------------------------------- |
+| `bun`           | 1.x     | Frontend package manager and script runner           |
+| `vite`          | ^8      | React frontend build tool                            |
+| `react`         | ^19     | Frontend component runtime                           |
+| `tailwindcss`   | ^4      | Utility-first styling + design tokens                |
+| `shadcn/ui`     | latest  | Source-first component system used in `frontend/src` |
+| `lucide-react`  | ^1.8    | Icon set used by the dashboard and theme toggle      |
+
 ### AWS services used
 
 | Service         | Task   | Purpose                                                                               |
@@ -216,6 +244,13 @@ job-prep-assistant/
 ```bash
 cd job-prep-assistant
 pip install -r requirements.txt
+```
+
+### 1b. Install frontend dependencies
+
+```bash
+cd frontend
+bun install
 ```
 
 ### 2. Configure environment
@@ -291,7 +326,9 @@ pytest tests/test_api.py tests/test_services.py tests/test_backend_integration.p
 | Goal                    | Command                                                                                                                                                             |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Install deps            | `pip install -r requirements.txt`                                                                                                                                   |
+| Install frontend deps   | `cd frontend && bun install`                                                                                                                                        |
 | Start Backend Server    | `python -m backend.main`                                                                                                                                            |
+| Start Frontend Dev App  | `cd frontend && bun dev`                                                                                                                                             |
 | Quick import check      | `python -c "from comparison_pipeline import run_comparison; print('OK')"`                                                                                           |
 | Run all tests           | `pytest -v`                                                                                                                                                         |
 | Run Task 3 tests only   | `pytest tests/test_normalizer.py tests/test_ontology.py tests/test_similarity.py tests/test_scorer.py tests/test_llm_layer.py tests/test_comparison_pipeline.py -v` |
@@ -372,9 +409,41 @@ Once running, view the interactive Swagger API documentation at your configured 
     Submit `resume` and `job_description` files as `multipart/form-data`.
     *Returns `{"job_id": "uuid"}`.*
 2. **Poll Status:** `GET /status/{job_id}`
-    Check the state of processing (e.g., `in_progress`, `completed`, `failed`).
+    Check the state of processing (e.g., `processing`, `completed`, `failed`).
 3. **Get Results:** `GET /result/{job_id}`
     Retrieve the full compiled AI analysis JSON when `completed`.
+
+---
+
+## Frontend Usage (Task 5)
+
+Start the FastAPI backend first:
+
+```bash
+python -m backend.main
+```
+
+In a second terminal, start the Bun frontend:
+
+```bash
+cd frontend
+bun dev
+```
+
+By default the frontend targets `http://127.0.0.1:8000`. To point it at a
+different backend, create `frontend/.env.local` and set:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
+Open the Vite URL shown in the terminal (typically `http://127.0.0.1:5173`).
+The frontend includes:
+
+- file upload fields for `resume` and `job_description`
+- live polling against `/status/{job_id}` and `/result/{job_id}`
+- score cards, skill coverage table, recommendations, and interview prompts
+- a built-in light/dark toggle
 
 ---
 
