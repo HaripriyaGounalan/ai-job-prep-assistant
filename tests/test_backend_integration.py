@@ -30,10 +30,11 @@ def test_full_api_integration(mock_run_comparison, mock_run_ext, mock_textract, 
     """
     Integration test of the FastAPI backend.
     
-    This tests the actual API endpoints, the Background Task execution, 
-    and the S3 JSON serialization, without patching the core services logic.
-    Instead, we only mock the external network calls directly (Textract and LLM operations)
-    to avoid incurring real AWS costs while verifying the system flow.
+    This exercises the real API endpoints, background task execution,
+    and S3 JSON serialization/end-to-end job flow.
+    The OCR boundary and the backend extraction/comparison orchestration
+    steps are mocked so the test remains deterministic and avoids real
+    external processing costs while still verifying the overall system flow.
     """
     
     # 1. Mock the specific LLM/AI operation boundaries

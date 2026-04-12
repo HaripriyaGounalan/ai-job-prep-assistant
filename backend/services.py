@@ -13,13 +13,18 @@ from ocr_pipeline.pipeline import OCRPipeline
 from extraction_pipeline.graph import run_extraction
 from comparison_pipeline.run_comparison import run_comparison
 from ocr_pipeline.services.s3_service import S3Service
-from config.settings import config
-from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# 1. Pre-load the S3 client globally so all background workers share the connection pool
-shared_s3_service = S3Service()
+# 1. Pre-load the S3 client lazily so it can be shared within a single Python 
+#    worker process without triggering real boto3 initialization at import time.
+_shared_s3_service = None
+
+def get_s3_service() -> S3Service:
+    global _shared_s3_service
+    if _shared_s3_service is None:
+        _shared_s3_service = S3Service()
+    return _shared_s3_service
 
 def process_job(job_id: str, resume_path: str, jd_path: str):
     """
@@ -46,14 +51,14 @@ def process_job(job_id: str, resume_path: str, jd_path: str):
         
         # 1. OCR Pipeline (Pipeline scopes to job to prevent state bleed, uses shared S3 client)
         logger.info(f"[{job_id}] Running OCR Pipeline...")
-        pipeline = OCRPipeline(s3_service=shared_s3_service)
+        pipeline = OCRPipeline(s3_service=get_s3_service())
         pipeline.initialize()
         ocr_result = pipeline.process_pair(resume_path, jd_path)
 
-        if ocr_result.resume_output and ocr_result.resume_output.status == "FAILED":
+        if ocr_result.resume_output and ocr_result.resume_output.status == "failed":
             raise Exception(f"Resume OCR failed: {ocr_result.resume_output.error}")
         
-        if ocr_result.job_description_output and ocr_result.job_description_output.status == "FAILED":
+        if ocr_result.job_description_output and ocr_result.job_description_output.status == "failed":
             raise Exception(f"Job Description OCR failed: {ocr_result.job_description_output.error}")
 
         if not ocr_result.resume_text or not ocr_result.job_description_text:
@@ -80,7 +85,7 @@ def process_job(job_id: str, resume_path: str, jd_path: str):
         }
 
         # Save to S3
-        shared_s3_service.store_processed_result(job_id, json.dumps(final_output, default=str))
+        get_s3_service().store_processed_result(job_id, json.dumps(final_output, default=str))
 
         logger.info(f"Job {job_id} completed successfully")
 
@@ -91,7 +96,7 @@ def process_job(job_id: str, resume_path: str, jd_path: str):
             "status": "failed",
             "error": str(e)
         }
-        shared_s3_service.store_processed_result(job_id, json.dumps(error_output))
+        get_s3_service().store_processed_result(job_id, json.dumps(error_output))
 
     finally:
         # Cleanup local files

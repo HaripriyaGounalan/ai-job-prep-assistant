@@ -372,7 +372,7 @@ Once running, view the interactive Swagger API documentation at your configured 
     Submit `resume` and `job_description` files as `multipart/form-data`.
     *Returns `{"job_id": "uuid"}`.*
 2. **Poll Status:** `GET /status/{job_id}`
-    Check the state of processing (e.g., `in_progress`, `completed`, `failed`).
+    Check the state of processing (e.g., `processing`, `completed`, `failed`).
 3. **Get Results:** `GET /result/{job_id}`
     Retrieve the full compiled AI analysis JSON when `completed`.
 
