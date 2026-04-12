@@ -4,12 +4,11 @@ import os
 from unittest.mock import patch, MagicMock
 from backend.services import process_job
 
-@patch("backend.services.S3Service")
+@patch("backend.services.shared_s3_service")
 @patch("backend.services.OCRPipeline")
 @patch("backend.services.run_extraction")
 @patch("backend.services.run_comparison")
-def test_process_job_success(mock_run_comp, mock_run_ext, mock_ocr, mock_s3_class):
-    mock_s3 = mock_s3_class.return_value
+def test_process_job_success(mock_run_comp, mock_run_ext, mock_ocr, mock_shared_s3):
     
     mock_ocr_instance = mock_ocr.return_value
     mock_ocr_result = MagicMock()
@@ -37,8 +36,8 @@ def test_process_job_success(mock_run_comp, mock_run_ext, mock_ocr, mock_s3_clas
         assert not os.path.exists("test_j.pdf")
         
         # Verify success saved to S3
-        mock_s3.store_processed_result.assert_called_once()
-        args, kwargs = mock_s3.store_processed_result.call_args
+        mock_shared_s3.store_processed_result.assert_called_once()
+        args, kwargs = mock_shared_s3.store_processed_result.call_args
         assert args[0] == "job-123"
         saved_data = json.loads(args[1])
         assert saved_data["status"] == "completed"
@@ -47,10 +46,9 @@ def test_process_job_success(mock_run_comp, mock_run_ext, mock_ocr, mock_s3_clas
         if os.path.exists("test_r.pdf"): os.remove("test_r.pdf")
         if os.path.exists("test_j.pdf"): os.remove("test_j.pdf")
 
-@patch("backend.services.S3Service")
+@patch("backend.services.shared_s3_service")
 @patch("backend.services.OCRPipeline")
-def test_process_job_failure(mock_ocr, mock_s3_class):
-    mock_s3 = mock_s3_class.return_value
+def test_process_job_failure(mock_ocr, mock_shared_s3):
     
     mock_ocr_instance = mock_ocr.return_value
     # Simulate an OCR crash
@@ -63,8 +61,8 @@ def test_process_job_failure(mock_ocr, mock_s3_class):
         process_job("job-456", "test_r.pdf", "test_j.pdf")
         
         # Verify failure saved to S3
-        mock_s3.store_processed_result.assert_called_once()
-        args, kwargs = mock_s3.store_processed_result.call_args
+        mock_shared_s3.store_processed_result.assert_called_once()
+        args, kwargs = mock_shared_s3.store_processed_result.call_args
         assert args[0] == "job-456"
         saved_data = json.loads(args[1])
         assert saved_data["status"] == "failed"

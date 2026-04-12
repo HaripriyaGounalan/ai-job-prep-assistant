@@ -18,6 +18,9 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# 1. Pre-load the S3 client globally so all background workers share the connection pool
+shared_s3_service = S3Service()
+
 def process_job(job_id: str, resume_path: str, jd_path: str):
     """
     Orchestrates the entire analysis pipeline for a single user job.
@@ -38,13 +41,12 @@ def process_job(job_id: str, resume_path: str, jd_path: str):
         resume_path (str): Local temporary file path for the candidate's resume.
         jd_path (str): Local temporary file path for the job description.
     """
-    s3_service = S3Service()
     try:
         logger.info(f"Starting job {job_id}")
         
-        # 1. OCR Pipeline
+        # 1. OCR Pipeline (Pipeline scopes to job to prevent state bleed, uses shared S3 client)
         logger.info(f"[{job_id}] Running OCR Pipeline...")
-        pipeline = OCRPipeline(s3_service=s3_service)
+        pipeline = OCRPipeline(s3_service=shared_s3_service)
         pipeline.initialize()
         ocr_result = pipeline.process_pair(resume_path, jd_path)
 
@@ -78,7 +80,7 @@ def process_job(job_id: str, resume_path: str, jd_path: str):
         }
 
         # Save to S3
-        s3_service.store_processed_result(job_id, json.dumps(final_output, default=str))
+        shared_s3_service.store_processed_result(job_id, json.dumps(final_output, default=str))
 
         logger.info(f"Job {job_id} completed successfully")
 
@@ -89,7 +91,7 @@ def process_job(job_id: str, resume_path: str, jd_path: str):
             "status": "failed",
             "error": str(e)
         }
-        s3_service.store_processed_result(job_id, json.dumps(error_output))
+        shared_s3_service.store_processed_result(job_id, json.dumps(error_output))
 
     finally:
         # Cleanup local files

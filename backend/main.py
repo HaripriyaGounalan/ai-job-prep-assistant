@@ -19,6 +19,9 @@ from config.settings import config
 import botocore.exceptions
 import logging
 
+# 1. Pre-load the heavy S3 client globally to share HTTP connection pools 
+shared_s3_service = S3Service()
+
 # Configure basic logging so logger.info shows up in the terminal
 logging.basicConfig(
     level=logging.INFO,
@@ -100,13 +103,12 @@ async def get_status(job_id: str):
     Returns:
         JSON with the status: "processing", "completed", or "failed".
     """
-    s3 = S3Service()
     # Target S3 path where the background task saves its final state
     key = f"{config.s3.processed_prefix}{job_id}/result.json"
     
     try:
         # Try to download the state file from AWS S3
-        data_bytes = s3.download_file_bytes(key)
+        data_bytes = shared_s3_service.download_file_bytes(key)
         data = json.loads(data_bytes)
         
         # If the file exists, parse its 'status' attribute
@@ -140,13 +142,12 @@ async def get_result(job_id: str):
     Returns:
         JSON blob identical to what the CLI version outputs to `result.json`.
     """
-    s3 = S3Service()
     # The expected output path of the final JSON result in S3
     key = f"{config.s3.processed_prefix}{job_id}/result.json"
     
     try:
         # Download, load from bytes to string, then parse as JSON
-        data_bytes = s3.download_file_bytes(key)
+        data_bytes = shared_s3_service.download_file_bytes(key)
         data = json.loads(data_bytes)
         
         status = data.get("status", "completed")
