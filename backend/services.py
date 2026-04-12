@@ -9,6 +9,8 @@ OCR, Extraction, and Comparison pipelines together.
 import os
 import json
 import logging
+import threading
+from functools import lru_cache
 from ocr_pipeline.pipeline import OCRPipeline
 from extraction_pipeline.graph import run_extraction
 from comparison_pipeline.run_comparison import run_comparison
@@ -18,13 +20,13 @@ logger = logging.getLogger(__name__)
 
 # 1. Pre-load the S3 client lazily so it can be shared within a single Python 
 #    worker process without triggering real boto3 initialization at import time.
-_shared_s3_service = None
 
+@lru_cache(maxsize=1)
 def get_s3_service() -> S3Service:
-    global _shared_s3_service
-    if _shared_s3_service is None:
-        _shared_s3_service = S3Service()
-    return _shared_s3_service
+    """
+    Returns a singleton S3Service per worker process.
+    """
+    return S3Service()
 
 def process_job(job_id: str, resume_path: str, jd_path: str):
     """

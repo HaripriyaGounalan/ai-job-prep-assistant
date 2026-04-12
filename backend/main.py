@@ -46,7 +46,7 @@ async def health_check():
     return {"status": "healthy"}
 
 @app.post("/upload", response_model=UploadResponse)
-async def upload_files(
+def upload_files(
     background_tasks: BackgroundTasks,
     resume: UploadFile = File(...),
     job_description: UploadFile = File(...)
@@ -80,10 +80,10 @@ async def upload_files(
     MAX_FILE_SIZE = config.processing.max_file_size_bytes
     MAX_MB = config.processing.max_file_size_mb
     
-    async def write_upload(upload_file: UploadFile, dest: str):
+    def write_upload(upload_file: UploadFile, dest: str):
         size = 0
         with open(dest, "wb") as f:
-            while chunk := await upload_file.read(1024 * 1024):  # 1MB chunks
+            while chunk := upload_file.file.read(1024 * 1024):  # 1MB chunks
                 size += len(chunk)
                 if size > MAX_FILE_SIZE:
                     f.close()
@@ -92,10 +92,11 @@ async def upload_files(
                 f.write(chunk)
 
     try:
-        await write_upload(resume, resume_path)
-        await write_upload(job_description, jd_path)
-    except HTTPException:
-        # If one file fails the size check, clean up any partially written files to avoid leaking disk space
+        write_upload(resume, resume_path)
+        write_upload(job_description, jd_path)
+    except Exception:
+        # If either file write fails for any reason, clean up any partially
+        # written files to avoid leaking disk space before re-raising.
         if os.path.exists(resume_path):
             os.remove(resume_path)
         if os.path.exists(jd_path):
