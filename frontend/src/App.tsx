@@ -76,16 +76,24 @@ function formatMatchType(matchType: SkillMatch["match_type"]) {
   return "Missing"
 }
 
-function getMatchBadgeVariant(matchType: SkillMatch["match_type"]) {
-  if (matchType === "none") {
-    return "destructive"
+function getMatchBadgeVariant() {
+  return "outline" as const
+}
+
+function getMatchBadgeClassName(matchType: SkillMatch["match_type"]) {
+  if (matchType === "exact") {
+    return "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
   }
 
   if (matchType === "related") {
-    return "secondary"
+    return "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300"
   }
 
-  return "default"
+  if (matchType === "none") {
+    return "border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300"
+  }
+
+  return ""
 }
 
 function getStatusSnapshot(job: JobState) {
@@ -539,7 +547,10 @@ function App() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getMatchBadgeVariant(row.match_type)}>
+                        <Badge
+                          variant={getMatchBadgeVariant()}
+                          className={getMatchBadgeClassName(row.match_type)}
+                        >
                           {formatMatchType(row.match_type)}
                         </Badge>
                       </TableCell>
