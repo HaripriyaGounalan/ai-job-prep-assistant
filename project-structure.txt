@@ -1,0 +1,118 @@
+Background:
+
+AI Job Preparation Assistant - user uploads a job description screenshot or PDF and their resume. The system extracts text, identifies required skills, compares them with the resume, shows missing skills, gives a match score, estimates salary range, and generates interview preparation questions.
+
+Project Structure:
+
+1. File storage + OCR
+
+Scope:
+	•	Upload resume and job description files
+	•	Store them in S3
+	•	Run OCR on PDFs/images with Textract
+	•	Return cleaned raw text for downstream steps
+
+Deliverables:
+	•	S3 bucket structure
+	•	OCR pipeline
+	•	text-cleaning utility
+	•	JSON output like:
+	•	resume_text
+	•	job_description_text
+
+Why this works:
+Amazon Bedrock fits the rest of the AWS stack well, and keeping OCR as its own task makes the whole pipeline easier to debug.  ￼
+
+⸻
+
+2. LangGraph/LangChain pipeline: extraction
+
+Scope:
+	•	Build the first half of the AI workflow
+	•	Extract structured job requirements from the job description
+	•	Extract structured candidate info and skills from the resume
+
+Recommended outputs:
+	•	required_skills
+	•	preferred_skills
+	•	years_experience_required
+	•	tools_and_technologies
+	•	resume_skills
+	•	resume_projects
+	•	resume_experience_summary
+
+Important design choice:
+Make this step return strict structured JSON, not free text. LangGraph supports stateful workflows, while LangChain gives you the prompt/model tooling around them.  ￼
+
+⸻
+
+3. LangGraph/LangChain continuation: comparison, scoring, recommendations
+
+Scope:
+	•	Take the structured outputs from Task 2
+	•	Compare JD requirements against resume skills
+	•	Compute match score
+	•	Identify missing skills
+	•	Generate recommendations, upskilling suggestions, and interview questions
+
+My recommended split inside this task:
+	•	Code/rules:
+	•	skill overlap
+	•	missing skills
+	•	match percentage
+	•	scoring rubric
+	•	LLM:
+	•	explanation of strengths/gaps
+	•	study recommendations
+	•	interview prep questions
+	•	optional salary summary
+
+This is the most important architecture decision. Use the LLM for language-heavy outputs, but keep comparison and scoring deterministic in backend code wherever possible. LangGraph workflows are designed for predetermined execution paths, which fits this well.  ￼
+
+⸻
+
+4. Backend integration: FastAPI endpoints
+
+Scope:
+	•	Integrate Tasks 1, 2, and 3 into one backend service
+	•	Expose endpoints for upload, processing, status, and results
+	•	Handle request/response validation
+	•	Manage Bedrock calls, OCR calls, and workflow execution
+
+Suggested endpoints:
+	•	POST /upload
+	•	POST /analyze
+	•	GET /result/{id}
+	•	GET /health
+
+Suggested backend responsibility split:
+	•	FastAPI handles API routes and validation
+	•	service layer handles OCR + graph calls
+	•	utility layer handles scoring + parsing
+
+FastAPI is a good fit here because it is designed around declaring an app instance and path operations cleanly, which makes it straightforward for a project backend.  ￼
+
+⸻
+
+5. React + shadcn/ui frontend
+
+Scope:
+	•	Build upload interface
+	•	Show processing status
+	•	Display structured results cleanly
+	•	Add sections for:
+	•	extracted skills
+	•	missing skills
+	•	match score
+	•	recommendations
+	•	interview questions
+
+Suggested UI pages/components:
+	•	Upload page
+	•	Results dashboard
+	•	Score card
+	•	Skills gap table
+	•	Recommendation cards
+	•	Interview question accordion
+
+shadcn/ui is a code-based component system rather than a traditional packaged component library, which makes it a good choice if you want a polished UI without too much custom styling overhead. It also expects Tailwind in the project setup

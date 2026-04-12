@@ -14,3 +14,7 @@ wheels/
 
 # VS Code
 .vscode/
+
+uv.lock
+.python-version
+.uv/
