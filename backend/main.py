@@ -13,14 +13,10 @@ import tempfile
 from fastapi import FastAPI, UploadFile, File, BackgroundTasks, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from .schemas import UploadResponse, JobStatusResponse, JobResultResponse, HealthResponse
-from .services import process_job
-from ocr_pipeline.services.s3_service import S3Service
+from .services import process_job, get_s3_service
 from config.settings import config
 import botocore.exceptions
 import logging
-
-# 1. Pre-load the heavy S3 client globally to share HTTP connection pools 
-shared_s3_service = S3Service()
 
 # Configure basic logging so logger.info shows up in the terminal
 logging.basicConfig(
@@ -32,8 +28,9 @@ app = FastAPI(title="AI Job Prep Assistant API")
 
 app.add_middleware(
     CORSMiddleware,
+    # In production, replace the wildcard with your specific frontend domains
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -49,7 +46,7 @@ async def health_check():
     return {"status": "healthy"}
 
 @app.post("/upload", response_model=UploadResponse)
-async def upload_files(
+def upload_files(
     background_tasks: BackgroundTasks,
     resume: UploadFile = File(...),
     job_description: UploadFile = File(...)
@@ -73,15 +70,38 @@ async def upload_files(
     temp_dir = tempfile.gettempdir()
     
     # 2. Build secure temporary file paths for both documents
-    resume_path = os.path.join(temp_dir, f"{job_id}_resume_{resume.filename}")
-    jd_path = os.path.join(temp_dir, f"{job_id}_jd_{job_description.filename}")
+    # Sanitize filenames to prevent directory traversal attacks
+    safe_resume_name = os.path.basename(resume.filename) if resume.filename else "resume"
+    safe_jd_name = os.path.basename(job_description.filename) if job_description.filename else "jd"
+    resume_path = os.path.join(temp_dir, f"{job_id}_resume_{safe_resume_name}")
+    jd_path = os.path.join(temp_dir, f"{job_id}_jd_{safe_jd_name}")
     
-    # 3. Stream the uploaded content asynchronously to local disk
-    with open(resume_path, "wb") as f:
-        f.write(await resume.read())
-        
-    with open(jd_path, "wb") as f:
-        f.write(await job_description.read())
+    # 3. Stream the uploaded content in chunks to local disk to prevent memory overflow
+    MAX_FILE_SIZE = config.processing.max_file_size_bytes
+    MAX_MB = config.processing.max_file_size_mb
+    
+    def write_upload(upload_file: UploadFile, dest: str):
+        size = 0
+        with open(dest, "wb") as f:
+            while chunk := upload_file.file.read(1024 * 1024):  # 1MB chunks
+                size += len(chunk)
+                if size > MAX_FILE_SIZE:
+                    f.close()
+                    os.remove(dest)
+                    raise HTTPException(status_code=413, detail=f"File {upload_file.filename} exceeds {MAX_MB}MB limit.")
+                f.write(chunk)
+
+    try:
+        write_upload(resume, resume_path)
+        write_upload(job_description, jd_path)
+    except Exception:
+        # If either file write fails for any reason, clean up any partially
+        # written files to avoid leaking disk space before re-raising.
+        if os.path.exists(resume_path):
+            os.remove(resume_path)
+        if os.path.exists(jd_path):
+            os.remove(jd_path)
+        raise
         
     # 4. Start the heavy AI processing pipeline in a background thread 
     #    so the web browser isn't forced to wait for it to complete.
@@ -90,7 +110,7 @@ async def upload_files(
     return {"job_id": job_id, "message": "Files uploaded successfully and processing started."}
 
 @app.get("/status/{job_id}", response_model=JobStatusResponse)
-async def get_status(job_id: str):
+def get_status(job_id: str):
     """
     Check the current processing status of an uploaded job.
     
@@ -108,7 +128,7 @@ async def get_status(job_id: str):
     
     try:
         # Try to download the state file from AWS S3
-        data_bytes = shared_s3_service.download_file_bytes(key)
+        data_bytes = get_s3_service().download_file_bytes(key)
         data = json.loads(data_bytes)
         
         # If the file exists, parse its 'status' attribute
@@ -128,7 +148,7 @@ async def get_status(job_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/result/{job_id}", response_model=JobResultResponse)
-async def get_result(job_id: str):
+def get_result(job_id: str):
     """
     Retrieve the fully completed job output (the Final API Response).
     
@@ -147,7 +167,7 @@ async def get_result(job_id: str):
     
     try:
         # Download, load from bytes to string, then parse as JSON
-        data_bytes = shared_s3_service.download_file_bytes(key)
+        data_bytes = get_s3_service().download_file_bytes(key)
         data = json.loads(data_bytes)
         
         status = data.get("status", "completed")
@@ -173,8 +193,9 @@ if __name__ == "__main__":
     # 1. Fetch from the environment, falling back to localhost and 8000
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", 8000))
+    reload_enabled = os.getenv("RELOAD", "false").strip().lower() in ("1", "true", "yes", "on")
     
-    print(f"Starting server on http://{host}:{port}")
+    print(f"Starting server on http://{host}:{port} (reload={reload_enabled})")
     
     # 2. Programmatically start Uvicorn using the variables
-    uvicorn.run("backend.main:app", host=host, port=port, reload=True)
+    uvicorn.run("backend.main:app", host=host, port=port, reload=reload_enabled)

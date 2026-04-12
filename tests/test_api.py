@@ -38,9 +38,9 @@ def test_upload_files(mock_process_job):
     assert "resume.pdf" in args[1]
     assert "jd.pdf" in args[2]
 
-@patch("backend.main.shared_s3_service")
+@patch("backend.main.get_s3_service")
 def test_get_status_completed(mock_shared_s3):
-    mock_shared_s3.download_file_bytes.return_value = json.dumps({
+    mock_shared_s3.return_value.download_file_bytes.return_value = json.dumps({
         "job_id": "123",
         "status": "completed"
     }).encode("utf-8")
@@ -52,11 +52,11 @@ def test_get_status_completed(mock_shared_s3):
     assert data["status"] == "completed"
     assert data["job_id"] == "123"
 
-@patch("backend.main.shared_s3_service")
+@patch("backend.main.get_s3_service")
 def test_get_status_processing(mock_shared_s3):
     # Simulate file not found in S3
     error_response = {'Error': {'Code': '404', 'Message': 'Not Found'}}
-    mock_shared_s3.download_file_bytes.side_effect = botocore.exceptions.ClientError(error_response, 'GetObject')
+    mock_shared_s3.return_value.download_file_bytes.side_effect = botocore.exceptions.ClientError(error_response, 'GetObject')
     
     response = client.get("/status/123")
     
@@ -64,9 +64,9 @@ def test_get_status_processing(mock_shared_s3):
     data = response.json()
     assert data["status"] == "processing"
 
-@patch("backend.main.shared_s3_service")
+@patch("backend.main.get_s3_service")
 def test_get_result_completed(mock_shared_s3):
-    mock_shared_s3.download_file_bytes.return_value = json.dumps({
+    mock_shared_s3.return_value.download_file_bytes.return_value = json.dumps({
         "job_id": "123",
         "status": "completed",
         "comparison": {"score": 85}
@@ -79,13 +79,15 @@ def test_get_result_completed(mock_shared_s3):
     assert data["status"] == "completed"
     assert data["result"] == {"score": 85}
 
-@patch("backend.main.shared_s3_service")
+@patch("backend.main.get_s3_service")
 def test_get_result_processing(mock_shared_s3):
     # Simulate file not found in S3
     error_response = {'Error': {'Code': 'NoSuchKey', 'Message': 'The specified key does not exist.'}}
-    mock_shared_s3.download_file_bytes.side_effect = botocore.exceptions.ClientError(error_response, 'GetObject')
+    mock_shared_s3.return_value.download_file_bytes.side_effect = botocore.exceptions.ClientError(error_response, 'GetObject')
     
     response = client.get("/result/123")
     
     assert response.status_code == 404
     assert "processing" in response.json()["detail"]
+
+
