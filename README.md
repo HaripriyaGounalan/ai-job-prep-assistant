@@ -16,13 +16,13 @@ score, estimates salary range, and generates interview preparation questions.
 | 1    | File Storage + OCR                   | Upload files to S3, run Textract OCR, clean text                                                                           | Done (40 tests) |
 | 2    | LangGraph Extraction                 | Extract structured job requirements and candidate profile via Bedrock                                                      | Done (51 tests) |
 | 3    | Comparison, Scoring, Recommendations | 5-layer pipeline: skill normalization, ontology matching, semantic similarity, deterministic scoring, Bedrock LLM insights | Done (77 tests) |
+| 4    | Backend Integration (FastAPI)        | Wire Tasks 1–3 behind REST endpoints: `POST /upload`, `GET /status/{id}`, `GET /result/{id}`, `GET /health`                | Done (9 tests)  |
 
 ### Still To Do
 
-| Task | Name                          | Description                                                                                                                           | Status      |
-| ---- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
-| 4    | Backend Integration (FastAPI) | Wire Tasks 1–3 behind REST endpoints: `POST /upload`, `POST /analyze`, `GET /result/{id}`, `GET /health`                              | Not started |
-| 5    | React + shadcn/ui Frontend    | Upload UI, processing status, results dashboard with score card, skills gap table, recommendation cards, interview question accordion | Not started |
+| Task | Name                       | Description                                                                                                                           | Status      |
+| ---- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| 5    | React + shadcn/ui Frontend | Upload UI, processing status, results dashboard with score card, skills gap table, recommendation cards, interview question accordion | Not started |
 
 ### How Tasks 1 → 2 → 3 connect
 
@@ -38,11 +38,13 @@ comparison engine (normalize → ontology → semantic similarity → determinis
 scoring → LLM insights), returning a `ComparisonResult` with scores, skill gap
 lists, upskilling recommendations, interview questions, and salary context.
 
-### What Task 4 will wire together
+### How Task 4 (Backend API) orchestrates the flow
 
-FastAPI will orchestrate the full flow: accept file uploads, call Task 1 (OCR),
-pipe the cleaned text into Task 2 (extraction), feed structured data into
-Task 3 (comparison + scoring), and return the final JSON result.
+**Task 4** wraps Tasks 1–3 in an asynchronous FastAPI web server. 
+It uses non-blocking `BackgroundTasks` to orchestrate the entire end-to-end flow:
+1. `POST /upload` accepts files and instantly returns a tracking UUID.
+2. The background worker uploads files, runs OCR, triggers Bedrock extraction, evaluates the CV, and dumps the final JSON state to S3.
+3. The frontend safely polls AWS S3 via `GET /status/{job_id}` and `GET /result/{job_id}` without hanging or suffering from proxy timeouts.
 
 ---
 
@@ -115,6 +117,12 @@ job-prep-assistant/
 │   ├── llm_layer.py                 # Layer 5: single Bedrock call (temp 0.3) → validated LLMInsights
 │   └── run_comparison.py            # Orchestrator: runs all 5 layers, returns ComparisonResult
 │
+├── backend/                         # ── TASK 4: FastAPI Server & Orchestration ──
+│   ├── __init__.py
+│   ├── main.py                      # FastAPI app, CORS, routes (/upload, /status, /result, /health)
+│   ├── schemas.py                   # Pydantic models for API request/response validation
+│   └── services.py                  # Background task worker orchestrating Tasks 1-3 sequentially
+│
 ├── tests/
 │   ├── __init__.py
 │   ├── fixtures.py                  # Shared sample texts + mock LLM responses
@@ -141,6 +149,11 @@ job-prep-assistant/
 │   ├── test_llm_layer.py            #  7 tests — message structure, 5-question enforcement, graceful failure
 │   └── test_comparison_pipeline.py  # 10 tests — end-to-end integration, edge cases, real-world fixture
 │
+│   │  # Task 4 tests (9 total)
+│   ├── test_api.py                  #  6 tests — request validation, routing, HTTP responses, S3 polling
+│   ├── test_services.py             #  2 tests — orchestrated pipeline execution, error handling/checkpoints
+│   └── test_backend_integration.py  #  1 test  — full E2E mock hitting simulated AWS without patching routes
+│
 ├── samples/
 │   ├── resume.pdf                   # Sample resume (John Doe)
 │   ├── Jd.pdf                       # Sample job description (TD ML Engineer)
@@ -163,6 +176,9 @@ job-prep-assistant/
 
 | Package                 | Version   | Purpose                                                   |
 | ----------------------- | --------- | --------------------------------------------------------- |
+| `fastapi`               | >= 0.100  | REST API framework (Task 4 backend)                       |
+| `uvicorn`               | >= 0.20   | ASGI web server for FastAPI                               |
+| `python-multipart`      | >= 0.0.5  | Required for `UploadFile` (FastAPI file parsing)          |
 | `boto3`                 | >= 1.34.0 | AWS SDK — S3, Textract, Bedrock Runtime                   |
 | `botocore`              | >= 1.34.0 | Low-level AWS client (comes with boto3)                   |
 | `python-dotenv`         | >= 1.0.0  | Load `.env` file into environment                         |
@@ -263,6 +279,9 @@ pytest tests/test_extraction_models.py tests/test_extraction_prompts.py \
 # Task 3 only (77 tests)
 pytest tests/test_normalizer.py tests/test_ontology.py tests/test_similarity.py \
        tests/test_scorer.py tests/test_llm_layer.py tests/test_comparison_pipeline.py
+
+# Task 4 Backend only (9 tests)
+pytest tests/test_api.py tests/test_services.py tests/test_backend_integration.py
 ```
 
 ### Run against real AWS services
@@ -272,6 +291,7 @@ pytest tests/test_normalizer.py tests/test_ontology.py tests/test_similarity.py 
 | Goal                    | Command                                                                                                                                                             |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Install deps            | `pip install -r requirements.txt`                                                                                                                                   |
+| Start Backend Server    | `python -m backend.main`                                                                                                                                            |
 | Quick import check      | `python -c "from comparison_pipeline import run_comparison; print('OK')"`                                                                                           |
 | Run all tests           | `pytest -v`                                                                                                                                                         |
 | Run Task 3 tests only   | `pytest tests/test_normalizer.py tests/test_ontology.py tests/test_similarity.py tests/test_scorer.py tests/test_llm_layer.py tests/test_comparison_pipeline.py -v` |
@@ -323,9 +343,38 @@ python demo_run.py --resume samples/resume.pdf --job-desc samples/Jd.pdf -v
 python -c "from comparison_pipeline import run_comparison; print('OK')"
 python -c "from extraction_pipeline import run_extraction; print('OK')"
 python -c "from ocr_pipeline.pipeline import OCRPipeline; print('OK')"
+python -c "from backend.main import app; print('OK')"
 ```
 
-All three should print `OK`.
+All four should print `OK`.
+
+---
+
+## Backend API Usage (Task 4)
+
+Start the production-ready FastAPI server:
+
+```bash
+python -m backend.main
+```
+
+By default, the server will bind to `127.0.0.1` and port `8000`. You can easily override these by defining variables in your `.env` file (or exporting them in your terminal run):
+```env
+HOST=0.0.0.0
+PORT=8000
+```
+
+Once running, view the interactive Swagger API documentation at your configured address, typically:
+- `http://127.0.0.1:8000/docs`
+
+### Example Workflow
+1. **Upload Files:** `POST /upload`
+    Submit `resume` and `job_description` files as `multipart/form-data`.
+    *Returns `{"job_id": "uuid"}`.*
+2. **Poll Status:** `GET /status/{job_id}`
+    Check the state of processing (e.g., `in_progress`, `completed`, `failed`).
+3. **Get Results:** `GET /result/{job_id}`
+    Retrieve the full compiled AI analysis JSON when `completed`.
 
 ---
 

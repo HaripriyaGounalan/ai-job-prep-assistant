@@ -1,3 +1,11 @@
+"""
+Backend Services Module for the AI Job Prep Assistant.
+
+This module contains the primary orchestration logic that runs in the background 
+when a user uploads a resume and job description. It safely connects the 
+OCR, Extraction, and Comparison pipelines together.
+"""
+
 import os
 import json
 import logging
@@ -11,6 +19,25 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 def process_job(job_id: str, resume_path: str, jd_path: str):
+    """
+    Orchestrates the entire analysis pipeline for a single user job.
+    
+    This function is designed to run asynchronously as a FastAPI Background Task. 
+    It executes three main steps sequentially:
+        1. OCR Pipeline: Uploads source files to S3 and calls Amazon Textract.
+        2. Extraction Pipeline: Passes OCR text to an LLM (Amazon Bedrock) via 
+           LangGraph to extract structured Pydantic models.
+        3. Comparison Pipeline: Scores the matching skills and generates LLM insights.
+        
+    It handles its own exception catching and stores either a "completed" or "failed"
+    state file into AWS S3. These S3 JSON files act as the global state database
+    for the frontend interface to poll.
+    
+    Args:
+        job_id (str): Unique UUID generated for this upload request.
+        resume_path (str): Local temporary file path for the candidate's resume.
+        jd_path (str): Local temporary file path for the job description.
+    """
     s3_service = S3Service()
     try:
         logger.info(f"Starting job {job_id}")
